@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1400" width="1180" height="1400"><rect x="0" y="0" width="1180" height="1400" fill="#ffffff"/>
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1f2a44"/></marker>
+        <marker id="aht" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#EE0000"/></marker>
+        <marker id="aha" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#b7791f"/></marker>
+      </defs>
+      <style>
+        .t{font-weight:700;font-size:14px;fill:#182233;text-anchor:middle}
+        .s{font-size:11.5px;font-weight:500;fill:#5c6675;text-anchor:middle}
+        .ln{stroke:#1f2a44;stroke-width:2;fill:none;stroke-dasharray:5 4}
+        .lnt{stroke:#EE0000;stroke-width:2;fill:none;stroke-dasharray:5 4}
+        .lna{stroke:#b7791f;stroke-width:2;fill:none;stroke-dasharray:5 4}
+        .lbl{font-size:11px;font-weight:700;text-anchor:middle}
+      </style>
+
+      <!-- ===== on-premise boundary ===== -->
+      <rect x="24" y="24" width="1132" height="1352" rx="18" fill="none" stroke="#1f2a44" stroke-width="2" stroke-dasharray="9 7"/>
+      <text x="46" y="54" font-size="12.5" font-weight="800" fill="#1f2a44" letter-spacing="1">ON-PREMISE / SELF-HOSTED · Apple Silicon (Metal)</text>
+
+      <!-- ===== Ollama runtime zone (right) ===== -->
+      <rect x="560" y="300" width="562" height="272" rx="14" fill="#f1f9f4" stroke="#1e874b" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="841" y="326" font-size="12.5" font-weight="800" fill="#1e874b" text-anchor="middle" letter-spacing=".5">OLLAMA — ONE NATIVE RUNTIME · localhost:11434</text>
+      <!-- model chips (compact, standard gaps) -->
+      <rect x="586" y="340" width="510" height="54" rx="9" fill="#fff" stroke="#1e874b" stroke-width="2"/>
+      <text x="841" y="363" class="t" font-size="13.5">llama3.2:3b · 2.0 GB</text>
+      <text x="841" y="381" class="s">answers L1's yes/no moderation check</text>
+      <rect x="586" y="410" width="510" height="54" rx="9" fill="#fff" stroke="#1e874b" stroke-width="2"/>
+      <text x="841" y="433" class="t" font-size="13.5">llama-guard3:8b · 4.9 GB</text>
+      <text x="841" y="451" class="s">returns L3's safe / unsafe verdict</text>
+      <rect x="586" y="480" width="510" height="56" rx="9" fill="#fff" stroke="#1e874b" stroke-width="2.5"/>
+      <text x="841" y="503" class="t" font-size="13.5">gemma4:12b-mlx · 7.7 GB</text>
+      <text x="841" y="521" class="s">protected model — generates the answer (ALLOW only)</text>
+      <text x="841" y="558" class="s" font-style="italic">one process · models loaded on demand · shared by L1, L3, and the protected model</text>
+
+      <!-- ===== prompt ===== -->
+      <rect x="150" y="84" width="300" height="54" rx="10" fill="#fff" stroke="#1f2a44" stroke-width="2"/>
+      <text x="300" y="116" class="t">Enterprise application / user prompt</text>
+      <line x1="300" y1="138" x2="300" y2="174" class="ln" marker-end="url(#ah)"/>
+
+      <!-- ===== gateway ===== -->
+      <rect x="130" y="174" width="340" height="66" rx="10" fill="#fff" stroke="#EE0000" stroke-width="2"/>
+      <text x="300" y="202" class="t">Gateway · orchestrator (sole ingress)</text>
+      <text x="300" y="222" class="s">scores the four detectors concurrently · logs every decision</text>
+      <line x1="300" y1="240" x2="300" y2="288" class="ln" marker-end="url(#ah)"/>
+
+      <!-- ===== detection-layer group ===== -->
+      <rect x="104" y="288" width="388" height="344" rx="12" fill="#f6f8fb" stroke="#cdd6e2" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="298" y="310" font-size="12" font-weight="800" fill="#5c6675" text-anchor="middle" letter-spacing=".5">DETECTION LAYERS — SCORED IN PARALLEL</text>
+      <!-- L1 -->
+      <rect x="138" y="322" width="320" height="60" rx="9" fill="#eef1f6" stroke="#cdd6e2" stroke-width="2"/>
+      <text x="298" y="347" class="t" font-size="13.5">L1 · Structural — NeMo self-check</text>
+      <text x="298" y="366" class="s" font-style="italic">consults a model on Ollama</text>
+      <!-- L2 -->
+      <rect x="138" y="398" width="320" height="60" rx="9" fill="#eef1f6" stroke="#cdd6e2" stroke-width="2"/>
+      <text x="298" y="423" class="t" font-size="13.5">L2 · Injection — DeBERTa PromptGuard 2</text>
+      <text x="298" y="442" class="s" font-style="italic">self-contained · no model</text>
+      <!-- L3 -->
+      <rect x="138" y="474" width="320" height="60" rx="9" fill="#eef1f6" stroke="#cdd6e2" stroke-width="2"/>
+      <text x="298" y="499" class="t" font-size="13.5">L3 · Harmful — Llama Guard 3</text>
+      <text x="298" y="518" class="s" font-style="italic">consults a model on Ollama</text>
+      <!-- L4 -->
+      <rect x="138" y="550" width="320" height="60" rx="9" fill="#eef1f6" stroke="#cdd6e2" stroke-width="2"/>
+      <text x="298" y="575" class="t" font-size="13.5">L4 · PII — Microsoft Presidio</text>
+      <text x="298" y="594" class="s" font-style="italic">self-contained · no model</text>
+
+      <!-- model-call connectors: each Ollama model sits beside the layer that calls it -->
+      <line x1="458" y1="352" x2="584" y2="367" class="lnt" marker-end="url(#aht)"/>
+      <line x1="458" y1="504" x2="584" y2="437" class="lnt" marker-end="url(#aht)"/>
+
+      <!-- ===== scores → fusion ===== -->
+      <line x1="298" y1="632" x2="300" y2="694" class="ln" marker-end="url(#ah)"/>
+      <text x="300" y="666" class="s">four detector scores</text>
+
+      <!-- ===== fusion ===== -->
+      <rect x="140" y="694" width="320" height="64" rx="10" fill="#f1f9f4" stroke="#1e874b" stroke-width="2"/>
+      <text x="300" y="720" class="t">Bayesian risk-fusion engine</text>
+      <text x="300" y="740" class="s">leaky noisy-OR · risk = 1−(1−λ)·Π(1−sᵢ) · λ=0.02</text>
+      <line x1="300" y1="758" x2="300" y2="800" class="ln" marker-end="url(#ah)"/>
+
+      <!-- ===== decision ===== -->
+      <rect x="140" y="800" width="320" height="62" rx="10" fill="#f4eefb" stroke="#7a3fb0" stroke-width="2"/>
+      <text x="300" y="826" class="t">Decision / policy</text>
+      <text x="300" y="846" class="s">Allow &lt; 0.30 · Flag &lt; 0.60 · Block ≥ 0.60</text>
+
+      <!-- branch: block (left) / allow (right) -->
+      <line x1="270" y1="862" x2="200" y2="916" class="ln" marker-end="url(#ah)"/>
+      <text x="176" y="892" class="lbl" fill="#EE0000">BLOCK / FLAG</text>
+      <line x1="340" y1="862" x2="410" y2="916" class="ln" marker-end="url(#ah)"/>
+      <text x="432" y="892" class="lbl" fill="#1e874b">ALLOW</text>
+
+      <!-- blocked box -->
+      <rect x="94" y="916" width="188" height="62" rx="10" fill="#fff5f5" stroke="#EE0000" stroke-width="2"/>
+      <text x="188" y="942" class="t" font-size="13" fill="#EE0000">Blocked / Flagged</text>
+      <text x="188" y="961" class="s">model never called</text>
+
+      <!-- protected model box -->
+      <rect x="316" y="916" width="224" height="72" rx="10" fill="#fff" stroke="#1e874b" stroke-width="2.5"/>
+      <text x="428" y="946" class="t">Protected model</text>
+      <text x="428" y="966" class="s">Ollama · gemma4:12b-mlx</text>
+      <!-- gemma connector: protected model -> gemma chip, routed up the channel -->
+      <path d="M540,952 L552,952 L552,508 L584,508" class="lnt" marker-end="url(#aht)"/>
+      <line x1="428" y1="988" x2="428" y2="1024" class="ln" marker-end="url(#ah)"/>
+
+      <!-- response -->
+      <rect x="316" y="1024" width="224" height="52" rx="10" fill="#fff" stroke="#1f2a44" stroke-width="2"/>
+      <text x="428" y="1055" class="t" font-size="13.5">Response to application</text>
+
+      <!-- ===== audit log (fed by both outcomes) ===== -->
+      <line x1="428" y1="1076" x2="352" y2="1126" class="ln" marker-end="url(#ah)"/>
+      <line x1="188" y1="978" x2="252" y2="1126" class="ln" marker-end="url(#ah)"/>
+      <rect x="140" y="1126" width="320" height="60" rx="10" fill="#eef1f6" stroke="#1f2a44" stroke-width="2"/>
+      <text x="300" y="1152" class="t">On-premise decision / audit log</text>
+      <text x="300" y="1171" class="s">append-only · every request recorded</text>
+      <line x1="300" y1="1186" x2="300" y2="1230" class="ln" marker-end="url(#ah)"/>
+
+      <!-- ===== continual learning ===== -->
+      <rect x="132" y="1230" width="336" height="66" rx="10" fill="#e9f0fb" stroke="#2f6fed" stroke-width="2"/>
+      <text x="300" y="1258" class="t">System-level continual learning (RQ2)</text>
+      <text x="300" y="1278" class="s">CUSUM drift detection → recalibrate thresholds</text>
+
+      <!-- feedback loop (amber), routed clear on the far left -->
+      <path d="M132,1263 L70,1263 L70,726 L140,726" class="lna" marker-end="url(#aha)"/>
+      <text x="54" y="1000" class="lbl" fill="#b7791f" transform="rotate(-90 54,1000)">feedback: recalibrate as threats drift</text>
+    </svg>

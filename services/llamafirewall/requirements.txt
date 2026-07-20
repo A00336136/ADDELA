@@ -1,0 +1,5 @@
+llamafirewall
+torch
+transformers
+fastapi
+uvicorn

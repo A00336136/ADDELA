@@ -1,0 +1,53 @@
+services:
+  nemo-guardrails:
+    build: services/nemo-guardrails
+    environment: [OLLAMA_BASE_URL=http://host.docker.internal:11434]
+
+  prompt-guard:
+    build: services/prompt-guard
+
+  llama-guard:
+    build: services/llama-guard
+    environment: [OLLAMA_BASE_URL=http://host.docker.internal:11434]
+
+  pii-service:
+    build: services/pii-service
+
+  fusion-service:
+    build: services/fusion-service
+    environment:
+      - FUSION_LEAK=0.02
+      - FUSION_TAU_FLAG=0.30
+      - FUSION_TAU_BLOCK=0.60
+
+  gateway:
+    build: services/gateway
+    ports: ["8000:8000"]                 # the ONLY service exposed to the host
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - ADDELA_LLM=gemma4:12b-mlx
+    volumes: ["./data/gateway:/data"]    # audit log persisted on-premise
+    depends_on: [nemo-guardrails, prompt-guard, llama-guard, pii-service, fusion-service]
+  dashboard:
+    build: services/dashboard
+    ports: ["8080:8000"]
+    environment:
+      - GATEWAY_URL=http://gateway:8000
+      - AUDIT_LOG=/gateway-data/audit_log.jsonl
+      - RESULTS_FILE=/dashboard-data/results.json
+    volumes:
+      - ./data/gateway:/gateway-data:ro
+      - ./data/dashboard:/dashboard-data
+    depends_on: [gateway]
+
+  # External baseline — Meta's LlamaFirewall. Only runs under the "baseline" profile:
+  #   docker compose --profile baseline up --build -d llamafirewall
+  llamafirewall:
+    build: services/llamafirewall
+    profiles: ["baseline"]
+    ports: ["8007:8000"]                       # host-published only for the benchmark
+    environment:
+      - USE_REAL_PROMPTGUARD=1                  # Scope B: genuine Llama-Prompt-Guard-2 (cached)
+      - HF_HUB_OFFLINE=1
+    volumes:
+      - ${HOME}/.cache/huggingface:/root/.cache/huggingface:ro
