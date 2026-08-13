@@ -87,6 +87,18 @@ def save_compare():
     return jsonify({"saved": True})
 
 
+COMBINERS_FILE = pathlib.Path(os.environ.get("COMBINERS_FILE", "/dashboard-data/combiners.json"))
+
+
+@app.get("/api/combiners")
+def api_combiners():
+    """RQ1 combiner comparison, published by eval/prove_figure2.py."""
+    if not COMBINERS_FILE.exists():
+        return jsonify({"ready": False,
+                        "hint": "run:  cd eval && ./.venv/bin/python prove_figure2.py"})
+    d = json.loads(COMBINERS_FILE.read_text()); d["ready"] = True
+    return jsonify(d)
+
 @app.get("/api/audit")
 def api_audit():
     n = int(request.args.get("n", 100))

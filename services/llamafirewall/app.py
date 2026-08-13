@@ -11,7 +11,7 @@ Excluded on purpose — both call Together AI and would break the on-premise the
   AGENT_ALIGNMENT · PII_DETECTION
 Decision rule is LlamaFirewall's own fail-closed policy: contained if the scan does not ALLOW.
 """
-import os
+import os, json, time
 
 os.environ.setdefault("HF_HUB_OFFLINE", "1")          # use cached weights, never phone home
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "true")
@@ -52,13 +52,35 @@ def health():
     return {"status": "ok", "scanners": [s.name for s in SCANNERS]}
 
 
+AUDIT = os.environ.get("BASELINE_AUDIT", "/data/baseline_audit.jsonl")
+
+
 @app.post("/score")
 def score(req: Req):
     r = lf.scan(UserMessage(content=req.text))
     contained = r.decision != ScanDecision.ALLOW               # fail-closed: anything not ALLOW blocks
-    return {
+    out = {
         "score": 1.0 if contained else 0.0,
         "decision": str(r.decision),
         "reason": getattr(r, "reason", None),
         "raw_score": getattr(r, "score", None),
     }
+    # Per-prompt audit trail, deliberately in the same shape as the gateway's audit_log.jsonl
+    # so the two systems' records can be compared line by line for the identical corpus.
+    record = {"ts": time.time(), "prompt": req.text,
+              "system": "llamafirewall-baseline",
+              "scanners": [sc.name for sc in SCANNERS],
+              "decision": out["decision"],
+              "contained": bool(contained),
+              "score": out["score"],
+              "raw_score": out["raw_score"],
+              "reason": out["reason"]}
+    try:
+        os.makedirs(os.path.dirname(AUDIT), exist_ok=True)
+        with open(AUDIT, "a") as f:
+            f.write(json.dumps(record) + "\n")
+    except Exception as e:                                     # never let auditing break a scan
+        print(f"audit write failed: {e}", flush=True)
+    print(f"baseline decision={out['decision']} contained={contained} "
+          f"score={out['score']} <- {req.text[:70]!r}", flush=True)
+    return out

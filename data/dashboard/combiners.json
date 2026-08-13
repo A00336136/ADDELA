@@ -1,0 +1,85 @@
+{
+  "n": 67,
+  "safe": 27,
+  "unsafe": 40,
+  "rows": [
+    {
+      "name": "L1 Structural",
+      "what": "NeMo rail -> llama3.2",
+      "kind": "deployed detector",
+      "how": "read at its native 0.5 operating point",
+      "f1": 0.935,
+      "bypass": 0.1,
+      "over": 0.037
+    },
+    {
+      "name": "L2 Injection",
+      "what": "DeBERTa (ProtectAI), in-container",
+      "kind": "deployed detector",
+      "how": "read at its native 0.5 operating point",
+      "f1": 0.73,
+      "bypass": 0.425,
+      "over": 0.0
+    },
+    {
+      "name": "L3 Harmful",
+      "what": "Llama Guard 3 -> llama-guard3",
+      "kind": "deployed detector",
+      "how": "read at its native 0.5 operating point",
+      "f1": 0.824,
+      "bypass": 0.3,
+      "over": 0.0
+    },
+    {
+      "name": "L4 PII",
+      "what": "Microsoft Presidio, in-container",
+      "kind": "deployed detector",
+      "how": "read at its native 0.5 operating point",
+      "f1": 0.261,
+      "bypass": 0.85,
+      "over": 0.0
+    },
+    {
+      "name": "Union (U)",
+      "what": "block if ANY layer fires (fail-closed)",
+      "kind": "offline comparison rule",
+      "how": "leakage-safe 5-fold CV on the captured scores",
+      "f1": 0.988,
+      "bypass": 0.0,
+      "over": 0.033
+    },
+    {
+      "name": "Noisy-OR fusion (F)",
+      "what": "ADDELA's deployed rule: 1-(1-L)*PROD(1-si)",
+      "kind": "deployed rule",
+      "how": "leakage-safe 5-fold CV on the captured scores",
+      "f1": 0.988,
+      "bypass": 0.0,
+      "over": 0.033
+    },
+    {
+      "name": "Learned stacker",
+      "what": "logistic regression fitted on the 4 scores",
+      "kind": "offline comparison rule",
+      "how": "leakage-safe 5-fold CV on the captured scores",
+      "f1": 0.975,
+      "bypass": 0.025,
+      "over": 0.033
+    },
+    {
+      "name": "LlamaFirewall",
+      "what": "Meta's package, on-premise config",
+      "kind": "external baseline",
+      "how": "run live over the identical 67 prompts",
+      "f1": 0.621,
+      "bypass": 0.55,
+      "over": 0.0,
+      "cm": {
+        "tp": 18,
+        "fp": 0,
+        "tn": 27,
+        "fn": 22
+      }
+    }
+  ]
+}

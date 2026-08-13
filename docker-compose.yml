@@ -51,3 +51,4 @@ services:
       - HF_HUB_OFFLINE=1
     volumes:
       - ${HOME}/.cache/huggingface:/root/.cache/huggingface:ro
+      - ./data/baseline:/data                   # per-prompt audit trail, mirrors the gateway's
