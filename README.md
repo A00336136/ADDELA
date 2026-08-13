@@ -21,6 +21,7 @@ Supervisor: Mary Pidgeon.
 ## Table of contents
 1. [Architecture at a glance](#1-architecture-at-a-glance)
 2. [Prerequisites (macOS, Apple silicon) — Homebrew installs](#2-prerequisites-macos-apple-silicon--homebrew-installs)
+   · [2.1 The environment every reported number was measured on](#21-the-environment-every-reported-number-was-measured-on)
 3. [Get the code](#3-get-the-code)
 4. [Pull the models (Ollama)](#4-pull-the-models-ollama)
 5. [Repository layout](#5-repository-layout)
@@ -28,6 +29,8 @@ Supervisor: Mary Pidgeon.
 7. [Build and run the stack](#7-build-and-run-the-stack)
 8. [Every service, in full — code, Dockerfile, packages](#8-every-service-in-full--code-dockerfile-packages)
 9. [Testing and evaluation](#9-testing-and-evaluation)
+   · [9.4 The two independent audit trails](#94-the-two-independent-audit-trails)
+   · [9.5 Proving both systems saw the identical corpus](#95-proving-both-systems-saw-the-identical-corpus)
 10. [Authorship & AI-use declaration](#10-authorship--ai-use-declaration)
 11. [Consolidated reference URLs](#11-consolidated-reference-urls)
 
@@ -101,6 +104,31 @@ curl -s http://localhost:11434/api/tags   # Ollama is up (returns JSON)
 > Docker Desktop provides the `host.docker.internal` DNS name the containers use to reach the
 > native Ollama server on the host. No further networking setup is required.
 
+### 2.1 The environment every reported number was measured on
+
+The results in the accompanying write-ups come from this machine. Reproduce the table on any host
+with `system_profiler SPHardwareDataType`, `docker version`, `ollama --version`, and
+`docker compose exec <service> pip show <package>`.
+
+| Layer | Component | Version / specification |
+|---|---|---|
+| Hardware | Apple M3 Max (`Mac15,11`) | 14 CPU cores, 36 GB unified memory |
+| OS | macOS | 26.6.1 (Darwin 25.6.0), Metal / MLX available |
+| Containers | Docker Engine (Desktop) | 29.6.1, Linux VM allocated 15.6 GiB |
+| Model runtime | Ollama (native, **not** containerised) | 0.32.6 on `:11434` |
+| Service runtime | Python (in every service image) | 3.11 |
+| Service framework | FastAPI / Uvicorn | 0.141.1 |
+| L1 | `nemoguardrails` | 0.23.0 |
+| L2 | `transformers` / `torch` | 5.14.1 / 2.13.0 |
+| L4 | `presidio-analyzer` | 2.2.364 |
+| Console | `flask` | 3.1.3 |
+| Evaluation host | Python + `scikit-learn`, `numpy`, `matplotlib` | 3.11.15 (host venv in `eval/`) |
+
+**Measured end-to-end latency** (warm models, single prompt through the gateway):
+**≈ 1.81 s** for an ALLOW (four detectors in parallel + fusion + Gemma generation) and
+**≈ 0.52 s** for a BLOCK (no generation — the model is never called). The *first* request after a
+cold start is ≈ 20 s while Ollama loads the weights into unified memory.
+
 ---
 
 ## 3. Get the code
@@ -173,14 +201,18 @@ ADDELA/
 │       ├── Dockerfile
 │       └── requirements.txt
 ├── eval/                              # offline evaluation (not containerised)  [CUSTOM]
-│   ├── collect_scores.py
-│   ├── combiner_eval.py
-│   ├── drift_eval.py
+│   ├── collect_scores.py              # RQ1 — drives the live gateway, captures the 4 layer scores
+│   ├── combiner_eval.py               # RQ1 — leakage-safe 5-fold CV over the three composition rules
+│   ├── prove_figure2.py               # RQ1 — recomputes every bar of Figure 2 from the raw evidence
+│   ├── verify_identical_corpus.py     # proof both systems saw the same 67 prompts
+│   ├── demo_live.py                   # guided 9-step live walkthrough (for a demonstration)
+│   ├── drift_eval.py                  # RQ2 — CUSUM drift detection over the audit log
 │   ├── scores.json                    # produced by collect_scores.py
 │   └── drift_result.json              # produced by drift_eval.py
 └── data/                              # created at run time (git-ignored content)
-    ├── gateway/audit_log.jsonl        # append-only on-premise decision log
-    └── dashboard/{results.json,compare.json}
+    ├── gateway/audit_log.jsonl        # ADDELA's append-only on-premise decision log
+    ├── baseline/baseline_audit.jsonl  # the LlamaFirewall baseline's independent decision log
+    └── dashboard/{results.json,compare.json,combiners.json}
 ```
 
 `[VENDOR]` = a genuine third-party artefact used as-is. `[CUSTOM]` = code authored for this project
@@ -813,9 +845,22 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
 ```
 
-The front-end is `services/dashboard/templates/index.html` (a single self-contained HTML/JS
-console with tabs for the architecture, manual testing, per-component probing, the audit trail and
-the LlamaFirewall comparison). Packages: `flask`, `requests`.
+The front-end is `services/dashboard/templates/index.html` — a single self-contained HTML/JS
+console (no build step, no CDN) with nine tabs:
+
+| Tab | What it does |
+|---|---|
+| **Architecture Flow** | the live hub-and-spoke diagram of the deployed system |
+| **Manual Testing** | push any prompt through the whole stack; run all 67 in a batch |
+| **Per-Component** | probe one detector at a time (L1 / L2 / L3 / L4) |
+| **Audit & Evidence** | reads back `data/gateway/audit_log.jsonl` |
+| **Benchmarking / RQ2** | drift-detection results from `eval/drift_result.json` |
+| **Dataset (67)** | the labelled corpus itself — text, stratum and ground-truth label |
+| **Combiners (RQ1)** | all eight configurations of Figure 2, published by `eval/prove_figure2.py` |
+| **Comparison** | ADDELA vs the LlamaFirewall baseline over the identical corpus |
+| **Backend Logs** | where every log lives, and the cross-checks that can be run against them |
+
+Packages: `flask`, `requests`.
 
 ### 8.9 `llamafirewall` — external baseline `[VENDOR pkg + CUSTOM wrapper]`
 
@@ -913,6 +958,29 @@ def score(req: Req):
     }
 ```
 
+The baseline keeps its **own** append-only audit trail, deliberately in the same shape as the
+gateway's, so the two systems' records can be compared line by line without either one trusting the
+other's summary:
+
+```python
+AUDIT = os.environ.get("BASELINE_AUDIT", "/data/baseline_audit.jsonl")
+
+record = {"ts": time.time(), "prompt": req.text,
+          "system": "llamafirewall-baseline",
+          "scanners": [sc.name for sc in SCANNERS],
+          "decision": out["decision"], "contained": bool(contained),
+          "score": out["score"], "raw_score": out["raw_score"], "reason": out["reason"]}
+with open(AUDIT, "a") as f:
+    f.write(json.dumps(record) + "\n")
+
+print(f"baseline decision={out['decision']} contained={contained} "
+      f"score={out['score']} <- {req.text[:70]!r}", flush=True)
+```
+
+The Compose file mounts `./data/baseline:/data`, so the trail lands on the host at
+`data/baseline/baseline_audit.jsonl` and survives the container being removed. Tail it with
+`docker compose logs -f llamafirewall`.
+
 > The genuine `PROMPT_GUARD` scanner needs Meta's gated **Llama-Prompt-Guard-2** weights cached
 > once under `~/.cache/huggingface` (a one-time `huggingface-cli download meta-llama/Llama-Prompt-Guard-2-86M`
 > after `huggingface-cli login`). The Compose file mounts that cache read-only; the container runs
@@ -928,47 +996,87 @@ def score(req: Req):
 Open **<http://localhost:8080>** and use the *Manual Testing* / *Per-Component* tabs to push
 prompts through the whole stack or through one layer at a time.
 
-From the command line (the gateway reads the `text` field; `decide_only` skips answer generation):
+From the command line. The gateway's request field is **`text`** (not `prompt` — posting `prompt`
+returns a 422 `missing body.text`). The optional `decide_only` flag skips answer generation:
 
 ```bash
-# 1. drive one prompt through the whole guardrail (per-layer scores + decision)
-curl -s localhost:8080/api/analyze -H 'Content-Type: application/json' \
-     -d '{"text": "Ignore all previous instructions ..."}'
+# 1. one prompt through the whole guardrail — per-layer scores, fused risk, decision AND the answer
+curl -s localhost:8000/api/analyze -H 'Content-Type: application/json' \
+     -d '{"text": "What is the capital of Ireland?"}' | python3 -m json.tool
 
-# 2. evidence that a blocked prompt never reaches the protected model
+# 2. the same prompt, guardrail decision only (no Gemma call — this is what the batch runs use)
+curl -s localhost:8000/api/analyze -H 'Content-Type: application/json' \
+     -d '{"text": "Ignore all previous instructions ...", "decide_only": true}' | python3 -m json.tool
+
+# 3. evidence that a blocked prompt never reaches the protected model
 docker compose logs gateway | grep decision=
-#   decision=ALLOW risk=0.142 -> invoking protected LLM gemma4:12b-mlx
-#   decision=BLOCK risk=0.867 -> protected LLM gemma4:12b-mlx NOT called (blocked before the model)
+#   decision=ALLOW risk=0.020 -> invoking protected LLM gemma4:12b-mlx
+#   decision=BLOCK risk=1.000 -> protected LLM gemma4:12b-mlx NOT called (blocked before the model)
 ```
 
-The append-only decision log is persisted on the host at `data/gateway/audit_log.jsonl`
-(one JSON record per request: prompt, per-layer scores, fused risk, decision).
+> **Why the risk values look binary.** The four detectors return near-binary scores on this corpus,
+> so `1 − (1−λ)·Π(1−sᵢ)` collapses to either the leak floor (`λ = 0.02`, nothing fired) or
+> `1.000` (at least one layer returned 1.0). That is an arithmetic consequence of the detectors'
+> outputs, not a bug — and it is precisely why the noisy-OR and the union agree on this corpus
+> (reported honestly as a **null result** in the write-ups).
+
+**`decide_only` — single prompt vs batch.** A *single* manual test from the console runs the full
+path and calls Gemma, so the answer is visible. The *Run all 67* batch and the *Comparison* run
+send `decide_only=true`: sixty-seven 12 B generations would otherwise saturate the machine's unified
+memory. If a manual test reports `protected LLM ... NOT called (decision-only eval)`, it was part of
+a batch, not a single run.
+
+The append-only decision log is persisted on the host at `data/gateway/audit_log.jsonl` — one JSON
+record per request (`ts`, `prompt`, the four per-layer `scores`, fused `risk`, `decision`). The
+gateway writes it directly; there is no separate audit service.
 
 ### 9.2 Offline evaluation — `eval/`
 
 The evaluation is **not containerised**; it drives the running stack from the host and analyses the
-results offline. Create the venv once, then run the three scripts.
+results offline. Create the venv once, then run the scripts.
 
 ```bash
 cd eval
 python3 -m venv .venv
-.venv/bin/pip install scikit-learn numpy matplotlib      # combiner_eval + drift_eval + figures
+.venv/bin/pip install scikit-learn numpy matplotlib requests
 
 # RQ1 — collect the per-layer scores for the 67-prompt corpus by driving the live gateway
-.venv/bin/python collect_scores.py         # writes eval/scores.json
+.venv/bin/python collect_scores.py            # writes eval/scores.json
 
 # RQ1 — leakage-safe 5-fold CV: fail-closed union vs leaky noisy-OR vs learned stacker
 .venv/bin/python combiner_eval.py
 
-# RQ2 — CUSUM drift detection over 500 simulated drift streams
-.venv/bin/python drift_eval.py             # writes eval/drift_result.json
+# RQ1 — recompute every bar of Figure 2 from the raw evidence, and publish it to the console
+.venv/bin/python prove_figure2.py             # writes data/dashboard/combiners.json
+
+# proof that ADDELA and the baseline were driven over the identical corpus
+.venv/bin/python verify_identical_corpus.py
+
+# RQ2 — CUSUM drift detection over the accumulated decision log
+.venv/bin/python drift_eval.py                # writes eval/drift_result.json
 ```
 
-`collect_scores.py` posts each labelled prompt to `http://localhost:8000/api/analyze` with
-`decide_only=true` (fast: it skips the Gemma generation) and records the per-layer scores and the
-decision. `combiner_eval.py` reports F1 / bypass / over-refusal / ECE per combiner.
-`drift_eval.py` builds the drift stream from the real fused risks, runs a CUSUM monitor whose
-threshold is calibrated on the pre-deployment period, and reports the detection delay.
+| Script | What it does |
+|---|---|
+| `collect_scores.py` | posts each labelled prompt to `http://localhost:8000/api/analyze` with `decide_only=true` and records the four per-layer scores plus the decision |
+| `combiner_eval.py` | reports F1 / bypass / over-refusal / ECE per composition rule under leakage-safe 5-fold CV |
+| `prove_figure2.py` | recomputes **all eight** configurations of Figure 2 from `eval/scores.json` and `data/dashboard/compare.json`, prints the provenance of each number, and publishes `data/dashboard/combiners.json` for the console's *Combiners (RQ1)* tab |
+| `verify_identical_corpus.py` | re-reads **both** audit trails, hashes the prompt text each system actually received, and confirms the two systems saw the same corpus |
+| `demo_live.py` | a guided nine-step walkthrough for a live demonstration (see §9.6) |
+| `drift_eval.py` | builds the drift stream from the real fused risks, runs a CUSUM monitor calibrated on the pre-deployment period, and reports the detection delay |
+
+**The eight configurations, and which ones are actually deployed.** Only **two** systems run live:
+ADDELA (whose deployed rule is the leaky noisy-OR) and the LlamaFirewall baseline. The other
+composition rules are *recomputed offline from the same captured scores* — deliberately, because
+scoring byte-identical inputs removes model non-determinism as a confound.
+
+| # | Configuration | Deployed? | How it is obtained |
+|---|---|---|---|
+| 1–4 | L1 Structural · L2 Injection · L3 Harmful · L4 PII | yes, as services | each read at its native 0.5 operating point |
+| 5 | **Union (U)** — block if *any* layer fires | no | recomputed: `max(s₁…s₄)`, threshold fitted per CV fold |
+| 6 | **Noisy-OR fusion (F)** — ADDELA's rule | **yes** — `fusion-service` | `1 − (1−λ)·Π(1−sᵢ)`, λ = 0.02 |
+| 7 | **Learned stacker** | no | logistic regression fitted on the four scores, leakage-safe 5-fold CV |
+| 8 | **LlamaFirewall** | **yes** — own container | run live over the identical 67 prompts |
 
 ### 9.3 LlamaFirewall comparison (baseline)
 
@@ -983,6 +1091,59 @@ docker compose --profile baseline up --build -d llamafirewall
 
 The comparison runs the same 67 prompts through **both** systems and writes
 `data/dashboard/compare.json` (per-prompt ADDELA vs LlamaFirewall decisions).
+
+### 9.4 The two independent audit trails
+
+Each system records its own decisions, written by a different service in a different container.
+Neither reads the other's file, which is what makes the comparison checkable after the fact.
+
+| System | Host path | In-container path | Written by |
+|---|---|---|---|
+| ADDELA | `data/gateway/audit_log.jsonl` | `/data/audit_log.jsonl` | `services/gateway/app.py` |
+| LlamaFirewall baseline | `data/baseline/baseline_audit.jsonl` | `/data/baseline_audit.jsonl` | `services/llamafirewall/app.py` |
+
+```bash
+# live, side by side
+docker compose logs -f gateway | grep decision=
+docker compose logs -f llamafirewall | grep 'baseline decision='
+
+# after the fact
+wc -l data/gateway/audit_log.jsonl data/baseline/baseline_audit.jsonl
+tail -1 data/baseline/baseline_audit.jsonl | python3 -m json.tool
+```
+
+### 9.5 Proving both systems saw the identical corpus
+
+```bash
+cd eval && .venv/bin/python verify_identical_corpus.py
+```
+
+The script does **not** trust `compare.json`. It re-reads both audit trails, normalises and hashes
+the prompt text each system recorded, and intersects those hashes with the labelled corpus:
+
+```
+prompts seen by BOTH systems           : 67 / 67
+seen by ADDELA only                    : 0
+seen by the baseline only              : 0
+seen by neither (never tested)         : 0
+```
+
+It then prints a side-by-side extract — the same prompt as recorded by each system, with ADDELA's
+four scores, fused risk and verdict against the baseline's decision and reason.
+
+> If the baseline trail is short of 67, the container was started after some ADDELA runs. Run the
+> console's *Comparison* tab once so both trails cover the whole corpus.
+
+### 9.6 Guided live walkthrough
+
+```bash
+cd eval && .venv/bin/python demo_live.py            # pauses between steps
+cd eval && .venv/bin/python demo_live.py --no-pause # runs straight through
+```
+
+Nine steps that follow one benign prompt and one attack prompt through every configuration, with
+the arithmetic printed so each fused risk can be checked by hand against
+`risk = 1 − (1−λ)·Π(1−sᵢ)`. Intended for demonstrating the system rather than for producing results.
 
 ---
 
@@ -1003,8 +1164,10 @@ sentencepiece and scikit-learn/numpy/matplotlib. Each is obtained from its offic
 the thin FastAPI wrapper `app.py` in every service (exposing the uniform `/score`–`/health`
 contract), the NeMo configuration (`config.yml`, `prompt.yml`, `rails.co`), the `fusion-service`
 (the leaky noisy-OR engine), the `gateway` (orchestration, audit logging, decision-only mode), the
-`dashboard` (Flask app and the HTML/JS console), the LlamaFirewall wrapper, the `docker-compose.yml`,
-and the evaluation scripts in `eval/`.
+`dashboard` (Flask app and the HTML/JS console), the LlamaFirewall wrapper and its audit trail,
+the `docker-compose.yml`, and the evaluation scripts in `eval/` (`collect_scores.py`,
+`combiner_eval.py`, `prove_figure2.py`, `verify_identical_corpus.py`, `demo_live.py`,
+`drift_eval.py`).
 
 The author declares the use of an AI assistant (Anthropic Claude) for **reference guidance in
 building the deployed system from the official vendor sources, for code review and debugging of the

@@ -395,16 +395,40 @@
           <tr><td>Risk fusion</td><td>fusion-service</td><td><code>docker compose logs -f fusion-service</code></td></tr>
           <tr><td>Gateway (decisions + audit)</td><td>gateway</td><td><code>docker compose logs -f gateway</code></td></tr>
           <tr><td>Protected model + L1/L3 backends</td><td>Ollama (host)</td><td><code>ollama ps</code> · <code>tail -f ~/.ollama/logs/server.log</code></td></tr>
-          <tr><td>Baseline (comparison arm)</td><td>llamafirewall</td><td><code>docker compose logs -f llamafirewall</code></td></tr>
+          <tr><td>Baseline (comparison arm)</td><td>llamafirewall</td><td><code>docker compose logs -f llamafirewall</code><br><span class="muted">start it first: <code>docker compose --profile baseline up -d llamafirewall</code></span></td></tr>
         </tbody>
       </table></div>
     </div>
     <div class="card">
-      <h3>The audit trail — three views of the same record</h3>
-      <p class="muted">1 · live container log &nbsp; <code>docker compose logs -f gateway</code></p>
-      <p class="muted">2 · persisted file on the host &nbsp; <code>data/gateway/audit_log.jsonl</code></p>
-      <p class="muted">3 · same file inside the container &nbsp; <code>/data/audit_log.jsonl</code></p>
-      <p class="muted">Cross-check: a decision shown in the <b>Comparison</b> or <b>Manual Testing</b> tab appears as one JSON line here with the same per-layer scores — GUI and backend must match.</p>
+      <h3>Two independent audit trails — one per system</h3>
+      <p class="muted">Each system writes its own append-only record. They are produced by different services in different containers, and neither can write to the other's file — so their agreement is independent evidence, not a claim by the test harness.</p>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>System</th><th>Written by</th><th>On the host</th><th>Inside the container</th><th>Live tail</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>ADDELA</b></td><td>gateway</td>
+            <td><code>data/gateway/audit_log.jsonl</code></td>
+            <td><code>/data/audit_log.jsonl</code></td>
+            <td><code>tail -f data/gateway/audit_log.jsonl</code></td>
+          </tr>
+          <tr>
+            <td><b>LlamaFirewall</b> (baseline)</td><td>llamafirewall</td>
+            <td><code>data/baseline/baseline_audit.jsonl</code></td>
+            <td><code>/data/baseline_audit.jsonl</code></td>
+            <td><code>tail -f data/baseline/baseline_audit.jsonl</code></td>
+          </tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:10px">The gateway record carries the prompt, the four layer scores, the fused risk and the verdict. The baseline record carries the prompt, the <b>scanners that were active</b>, its own decision and the reason its scanners gave — so the on-premise configuration is evidenced on every individual scan.</p>
+    </div>
+    <div class="card">
+      <h3>Cross-checks you can run</h3>
+      <p class="muted">1 · GUI vs backend &nbsp; a decision shown in <b>Manual Testing</b> or <b>Comparison</b> appears as one JSON line in the gateway trail with the same per-layer scores.</p>
+      <p class="muted">2 · both systems saw the same corpus &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python verify_identical_corpus.py</code><br>
+      <span class="muted">re-reads both trails, matches on exact prompt text, and reports how many of the 67 appear in each.</span></p>
+      <p class="muted">3 · every bar in Evaluation 1 &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python prove_figure2.py</code><br>
+      <span class="muted">recomputes all eight configurations from the captured scores and refreshes the <b>Combiners (RQ1)</b> tab.</span></p>
+      <p class="muted">4 · step-by-step walkthrough &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python demo_live.py</code></p>
     </div>
   </section>
 </main>
