@@ -38,25 +38,25 @@ Supervisor: Mary Pidgeon.
 
 ## 1. Architecture at a glance
 
-```
-                    ┌───────────────────── ON-PREMISE HOST (macOS · Apple silicon / Metal) ──────────────────────┐
-                    │                                                                                            │
-  user prompt ─────▶│  gateway (:8000)  ── fans out ──▶  L1 nemo-guardrails ─┐                                   │
-                    │  sole ingress                      L2 prompt-guard      │   ┌── OLLAMA (native, :11434) ──┐ │
-                    │  orchestrator                      L3 llama-guard  ─────┼──▶│  llama3.2:3b   (L1 backend) │ │
-                    │                                    L4 pii-service       │   │  llama-guard3:8b (L3)       │ │
-                    │        │  4 scores                                      │   │  gemma4:12b-mlx (protected) │ │
-                    │        ▼                                                │   └────────────────────────────┘ │
-                    │  fusion-service ── leaky noisy-OR ── risk ─▶ Allow / Flag / Block                          │
-                    │        │                                     └─ only ALLOW calls gemma4                    │
-                    │        ▼                                                                                   │
-                    │  audit log (append-only JSONL)  ◀── dashboard (:8080, read-only console)                  │
-                    └────────────────────────────────────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="docs/architecture.svg" alt="ADDELA — gateway-centric guardrail architecture" width="100%">
+</p>
+
+<p align="center"><sub>
+  This is the <b>same diagram the running system draws</b>. It is exported verbatim from the
+  <i>Architecture Flow</i> tab of the operator console at <a href="http://localhost:8080">http://localhost:8080</a>
+  — see <a href="#881-regenerating-the-architecture-diagram">§8.8.1</a> to regenerate it.
+  Also available as <a href="docs/architecture.png">PNG</a>.
+</sub></p>
+
 
 - **Seven containers** on one private Docker network: `gateway`, `nemo-guardrails`, `prompt-guard`,
   `llama-guard`, `pii-service`, `fusion-service`, `dashboard`. Only the **gateway (:8000)** and the
   **dashboard (:8080)** are published to the host.
+- The **gateway is the centralized coordinator**: it calls all four detectors at once, hands the four
+  numbers to the fusion service, enforces whatever verdict comes back, and writes the audit line. It
+  does not decide — the fusion service does. Nothing flows detector-to-detector; every arrow above is
+  a call the gateway makes, with the reply returning on the same path.
 - **Ollama** runs *natively* (not containerised) so it can use Apple **MLX/Metal** acceleration.
   It serves three models: `llama3.2:3b` (L1's self-check backend), `llama-guard3:8b` (L3), and
   `gemma4:12b-mlx` (the protected model, called **only on an ALLOW**).
@@ -200,6 +200,10 @@ ADDELA/
 │       ├── app.py
 │       ├── Dockerfile
 │       └── requirements.txt
+├── docs/
+│   ├── architecture.svg               # the console's diagram, exported for this README
+│   ├── architecture.png               # same diagram as a raster fallback
+│   └── export_diagram.py              # lifts the diagram out of the console template
 ├── eval/                              # offline evaluation (not containerised)  [CUSTOM]
 │   ├── collect_scores.py              # RQ1 — drives the live gateway, captures the 4 layer scores
 │   ├── combiner_eval.py               # RQ1 — leakage-safe 5-fold CV over the three composition rules
@@ -861,6 +865,21 @@ console (no build step, no CDN) with nine tabs:
 | **Backend Logs** | where every log lives, and the cross-checks that can be run against them |
 
 Packages: `flask`, `requests`.
+
+#### 8.8.1 Regenerating the architecture diagram
+
+The diagram at the top of this README is not a separate drawing. It is authored **once**, inline in
+`services/dashboard/templates/index.html`, so the picture in the README cannot drift from the picture
+the running system draws in its *Architecture Flow* tab. `docs/export_diagram.py` lifts that `<svg>`
+out verbatim and writes a standalone copy:
+
+```bash
+python3 docs/export_diagram.py                                    # -> docs/architecture.svg
+rsvg-convert -w 1700 docs/architecture.svg -o docs/architecture.png   # brew install librsvg
+```
+
+Edit the diagram in the console template, refresh <http://localhost:8080>, then re-run the two
+commands above to bring the README back in step.
 
 ### 8.9 `llamafirewall` — external baseline `[VENDOR pkg + CUSTOM wrapper]`
 
