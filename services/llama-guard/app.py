@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 OLLAMA = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
-MODEL = os.environ.get("ADDELA_GUARD", "llama-guard3:8b")
+MODEL = os.environ.get("DDELA_GUARD", "llama-guard3:8b")
 
 app = FastAPI()
 

@@ -7,8 +7,8 @@
 <marker id="aB77" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#B7791F"/></marker>
 <marker id="aC55" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#C55A11"/></marker>
 </defs><rect width="1700" height="1150" fill="#ffffff"/>
-<text x="850" y="42" style="font:700 26px Inter,Arial,sans-serif;fill:#1F3864;text-anchor:middle">ADDELA — Gateway-Centric Guardrail Architecture</text>
-<text x="850" y="70" style="font:700 13px Inter,Arial,sans-serif;fill:#2E75B6;text-anchor:middle">On-Premise • Self-Hosted • Defence in Depth • Four Detectors • Calibrated Fusion • Fully Auditable</text>
+<text x="850" y="42" style="font:700 26px Inter,Arial,sans-serif;fill:#1F3864;text-anchor:middle">DDELA, Gateway Centric Guardrail Architecture</text>
+<text x="850" y="70" style="font:700 13px Inter,Arial,sans-serif;fill:#2E75B6;text-anchor:middle">On Premise • Self Hosted • Defence in Depth • Four Detectors • Calibrated Fusion • Fully Auditable</text>
 <rect x="700" y="92" width="300" height="88" rx="12" fill="#F2F9F2" stroke="#157347" stroke-width="1.6" filter="url(#sh)"/>
 <rect x="714" y="100" width="272" height="28" rx="7" fill="#E4F2E9" stroke="#157347" stroke-width="1.1"/>
 <text x="850.0" y="119" style="font:700 10.5px Inter,Arial,sans-serif;fill:#157347;text-anchor:middle">CLIENT</text>
@@ -16,7 +16,7 @@
 <text x="850" y="168" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">sends a prompt · receives the answer</text>
 <rect x="500" y="300" width="700" height="260" rx="12" fill="#FDF6F6" stroke="#C00000" stroke-width="1.6" filter="url(#sh)"/>
 <rect x="516" y="312" width="668" height="28" rx="7" fill="#FBE8E8" stroke="#C00000" stroke-width="1.1"/>
-<text x="850.0" y="331" style="font:700 12px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">ADDELA GATEWAY — centralized coordinator · custom FastAPI · port 8000 (the only open port)</text>
+<text x="850.0" y="331" style="font:700 12px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">DDELA GATEWAY, centralized coordinator · custom FastAPI · port 8000 (the only open port)</text>
 <rect x="516" y="360" width="127" height="146" rx="8" fill="#FBF7FE" stroke="#D9C2E8" stroke-width="1.3"/>
 <rect x="516" y="360" width="127" height="26" rx="8" fill="#F0E6F8" stroke="#D9C2E8" stroke-width="1"/>
 <text x="579.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">1 · INGRESS</text>
@@ -24,15 +24,15 @@
 <text x="579.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">at POST /api/analyze</text>
 <rect x="651" y="360" width="127" height="146" rx="8" fill="#FBF7FE" stroke="#D9C2E8" stroke-width="1.3"/>
 <rect x="651" y="360" width="127" height="26" rx="8" fill="#F0E6F8" stroke="#D9C2E8" stroke-width="1"/>
-<text x="714.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">2 · FAN-OUT</text>
+<text x="714.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">2 · FAN OUT</text>
 <text x="714.5" y="408" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">calls all four detectors</text>
-<text x="714.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">at once — same text</text>
+<text x="714.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">at once, same text</text>
 <rect x="786" y="360" width="127" height="146" rx="8" fill="#FBF7FE" stroke="#D9C2E8" stroke-width="1.3"/>
 <rect x="786" y="360" width="127" height="26" rx="8" fill="#F0E6F8" stroke="#D9C2E8" stroke-width="1"/>
 <text x="849.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">3 · COLLECT</text>
 <text x="849.5" y="408" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">gathers four scores [0,1]</text>
 <text x="849.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">unreachable ⇒ 1.0</text>
-<text x="849.5" y="442" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">(fail-closed)</text>
+<text x="849.5" y="442" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">(fail closed)</text>
 <rect x="921" y="360" width="127" height="146" rx="8" fill="#FBF7FE" stroke="#D9C2E8" stroke-width="1.3"/>
 <rect x="921" y="360" width="127" height="26" rx="8" fill="#F0E6F8" stroke="#D9C2E8" stroke-width="1"/>
 <text x="984.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">4 · FUSE</text>
@@ -43,10 +43,10 @@
 <rect x="1056" y="360" width="127" height="26" rx="8" fill="#F0E6F8" stroke="#D9C2E8" stroke-width="1"/>
 <text x="1119.5" y="377" style="font:700 9.5px Inter,Arial,sans-serif;fill:#7030A0;text-anchor:middle">5 · ENFORCE</text>
 <text x="1119.5" y="408" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">calls gemma4 only on</text>
-<text x="1119.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">ALLOW — on FLAG or</text>
+<text x="1119.5" y="425" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">ALLOW, on FLAG or</text>
 <text x="1119.5" y="442" style="font:400 8.6px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">BLOCK it is never called</text>
 <rect x="516" y="516" width="668" height="32" rx="7" fill="#FFF7F7" stroke="#EBBDBD"/>
-<text x="850" y="530" style="font:700 10px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">AUDIT LOGGING — one JSON line per request → ./data/gateway/audit_log.jsonl</text>
+<text x="850" y="530" style="font:700 10px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">AUDIT LOGGING, one JSON line per request → ./data/gateway/audit_log.jsonl</text>
 <text x="850" y="543" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">written by the gateway itself · there is no separate audit service</text>
 <path d="M834,180 L834,296" fill="none" stroke="#1868db" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#a186)"/>
 <circle cx="800" cy="240" r="13" fill="#1868db"/>
@@ -64,13 +64,13 @@
 <text x="1350.0" y="352.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">NeMo rail → asks llama3.2</text>
 <rect x="1262" y="392" width="176" height="80" rx="8" fill="#ffffff" stroke="#A9C8E8" stroke-width="1.4"/>
 <text x="1350.0" y="430.0" style="font:700 11.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">L2 · Injection</text>
-<text x="1350.0" y="448.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">DeBERTa · ProtectAI (in-container)</text>
+<text x="1350.0" y="448.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">DeBERTa · ProtectAI (in container)</text>
 <rect x="1262" y="488" width="176" height="80" rx="8" fill="#ffffff" stroke="#A9C8E8" stroke-width="1.4"/>
 <text x="1350.0" y="526.0" style="font:700 11.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">L3 · Harmful</text>
 <text x="1350.0" y="544.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">Llama Guard 3 → asks llama-guard3</text>
 <rect x="1262" y="584" width="176" height="80" rx="8" fill="#ffffff" stroke="#A9C8E8" stroke-width="1.4"/>
 <text x="1350.0" y="622.0" style="font:700 11.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">L4 · Personal data</text>
-<text x="1350.0" y="640.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">Microsoft Presidio (in-container)</text>
+<text x="1350.0" y="640.0" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">Microsoft Presidio (in container)</text>
 <text x="1350" y="682" style="font:400 8.6px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">all four run at the same time</text>
 <path d="M1204,400 L1246,400" fill="none" stroke="#1868db" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#a186)"/>
 <circle cx="1225" cy="374" r="13" fill="#1868db"/>
@@ -101,7 +101,7 @@
 <text x="1465" y="532.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">3</text>
 <rect x="560" y="800" width="520" height="190" rx="12" fill="#FFF8F1" stroke="#C55A11" stroke-width="1.6" filter="url(#sh)"/>
 <rect x="576" y="812" width="488" height="28" rx="7" fill="#FDEEE0" stroke="#C55A11" stroke-width="1.1"/>
-<text x="820.0" y="831" style="font:700 11px Inter,Arial,sans-serif;fill:#C55A11;text-anchor:middle">FUSION SERVICE — never sees the prompt, only the four numbers</text>
+<text x="820.0" y="831" style="font:700 11px Inter,Arial,sans-serif;fill:#C55A11;text-anchor:middle">FUSION SERVICE, never sees the prompt, only the four numbers</text>
 <text x="820" y="880" style="font:700 15px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">risk = 1 − (1 − λ) · Π ( 1 − sᵢ )</text>
 <text x="820" y="908" style="font:400 9.5px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">λ (lambda) = 0.02 · Π (pi) means “multiply together” · sᵢ is the score of layer i</text>
 <text x="820" y="942" style="font:700 12px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">ALLOW &lt; 0.30      ·      FLAG &lt; 0.60      ·      BLOCK ≥ 0.60</text>
@@ -118,7 +118,7 @@
 <path d="M1570,686 L1570,762 L1046,762 L1046,564" fill="none" stroke="#C00000" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#aC00)"/>
 <circle cx="1280" cy="746" r="13" fill="#C00000"/>
 <text x="1280" y="750.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">6</text>
-<text x="1280" y="712" style="font:700 9px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">ONLY ON ALLOW — the same prompt goes to gemma4</text>
+<text x="1280" y="712" style="font:700 9px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">ONLY ON ALLOW, the same prompt goes to gemma4</text>
 <text x="1280" y="780" style="font:400 8.8px Inter,Arial,sans-serif;fill:#C00000;text-anchor:middle">the generated answer returns to the gateway (never directly to the user)</text>
 <path d="M610,560 L610,700 L270,700 L270,796" fill="none" stroke="#B7791F" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#aB77)"/>
 <circle cx="440" cy="700" r="13" fill="#B7791F"/>
@@ -126,22 +126,13 @@
 <text x="440" y="682" style="font:700 9px Inter,Arial,sans-serif;fill:#B7791F;text-anchor:middle">one JSON line per request</text>
 <rect x="120" y="800" width="300" height="108" rx="12" fill="#FFFBF2" stroke="#B7791F" stroke-width="1.6" filter="url(#sh)"/>
 <rect x="134" y="808" width="272" height="28" rx="7" fill="#FBF0DC" stroke="#B7791F" stroke-width="1.1"/>
-<text x="270.0" y="827" style="font:700 10px Inter,Arial,sans-serif;fill:#B7791F;text-anchor:middle">ON-PREMISE AUDIT LOG</text>
+<text x="270.0" y="827" style="font:700 10px Inter,Arial,sans-serif;fill:#B7791F;text-anchor:middle">ON PREMISE AUDIT LOG</text>
 <text x="270" y="858" style="font:400 9.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">./data/gateway/audit_log.jsonl</text>
 <text x="270" y="876" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">prompt · four scores · risk · verdict</text>
-<text x="270" y="892" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">written by the gateway — no audit service</text>
-<path d="M270,908 L270,944" fill="none" stroke="#B7791F" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#aB77)"/>
-<text x="284" y="930" style="font:400 8.5px Inter,Arial,sans-serif;fill:#B7791F;text-anchor:start;font-style:italic">feeds</text>
-<rect x="120" y="948" width="300" height="140" rx="12" fill="#FFFBF2" stroke="#B7791F" stroke-width="1.6" filter="url(#sh)"/>
-<rect x="134" y="956" width="272" height="28" rx="7" fill="#FBF0DC" stroke="#B7791F" stroke-width="1.1"/>
-<text x="270.0" y="975" style="font:700 10px Inter,Arial,sans-serif;fill:#B7791F;text-anchor:middle">RQ2 · DRIFT DETECTION (OFFLINE)</text>
-<text x="270" y="1006" style="font:400 9.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">an offline script reads this log</text>
-<text x="270" y="1024" style="font:400 9.5px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">and runs CUSUM on the risk column</text>
-<text x="270" y="1042" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">not a running service</text>
-<text x="270" y="1060" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">threshold re-tuning = future work</text>
+<text x="270" y="892" style="font:400 8.8px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">written by the gateway, no audit service</text>
 <rect x="70" y="260" width="370" height="250" rx="12" fill="#F7F9FC" stroke="#C9D4E4" stroke-width="1.6" filter="url(#sh)"/>
 <rect x="84" y="268" width="342" height="28" rx="7" fill="#E8EDF4" stroke="#1F3864" stroke-width="1.1"/>
-<text x="255.0" y="287" style="font:700 10.5px Inter,Arial,sans-serif;fill:#1F3864;text-anchor:middle">WORKED EXAMPLE — MEASURED LIVE</text>
+<text x="255.0" y="287" style="font:700 10.5px Inter,Arial,sans-serif;fill:#1F3864;text-anchor:middle">WORKED EXAMPLE, MEASURED LIVE</text>
 <text x="255" y="322" style="font:700 11px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:middle">“What is the capital of France?”</text>
 <text x="255" y="344" style="font:400 9.5px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle">scores (0.0 · 0.000027 · 0.0 · 0.0)</text>
 <text x="255" y="366" style="font:700 10.5px Inter,Arial,sans-serif;fill:#157347;text-anchor:middle">risk 0.020 → ALLOW → answered in 1.81 s</text>
@@ -161,13 +152,13 @@
 <text x="1182" y="895" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">Gateway sends the same text to all four detectors at once</text>
 <circle cx="1160" cy="920" r="13" fill="#C00000"/>
 <text x="1160" y="924.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">3</text>
-<text x="1182" y="924" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">L1 and L3 consult their models — L2 and L4 answer by themselves</text>
+<text x="1182" y="924" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">L1 and L3 consult their models, L2 and L4 answer by themselves</text>
 <circle cx="1160" cy="949" r="13" fill="#1868db"/>
 <text x="1160" y="953.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">4</text>
 <text x="1182" y="953" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">The four scores return to the gateway</text>
 <circle cx="1160" cy="978" r="13" fill="#C55A11"/>
 <text x="1160" y="982.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">5</text>
-<text x="1182" y="982" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">Gateway sends the four scores unchanged — fusion decides: risk + verdict</text>
+<text x="1182" y="982" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">Gateway sends the four scores unchanged, fusion decides: risk + verdict</text>
 <circle cx="1160" cy="1007" r="13" fill="#C00000"/>
 <text x="1160" y="1011.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">6</text>
 <text x="1182" y="1011" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">On ALLOW the gateway calls gemma4 and receives the answer</text>
@@ -177,6 +168,6 @@
 <circle cx="1160" cy="1065" r="13" fill="#157347"/>
 <text x="1160" y="1069.5" style="font:700 12.5px Inter,Arial,sans-serif;fill:#fff;text-anchor:middle">8</text>
 <text x="1182" y="1069" style="font:400 10px Inter,Arial,sans-serif;fill:#0f1b2d;text-anchor:start">Gateway returns the answer (or refusal) to the application</text>
-<text x="1160" y="1088" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:start;font-style:italic">An unreachable detector scores 1.0 — the system fails closed.</text>
-<text x="850" y="1128" style="font:400 9.5px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">Transport: every hop is plain HTTP confined to this single machine — localhost and Docker’s private internal network; nothing crosses the host boundary. TLS between services = future hardening.</text>
+<text x="1160" y="1088" style="font:400 9px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:start;font-style:italic">An unreachable detector scores 1.0, the system fails closed.</text>
+<text x="850" y="1128" style="font:400 9.5px Inter,Arial,sans-serif;fill:#5a6b7f;text-anchor:middle;font-style:italic">Transport: every hop is plain HTTP confined to this single machine, localhost and Docker’s private internal network; nothing crosses the host boundary. TLS between services = future hardening.</text>
 </svg>

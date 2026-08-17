@@ -25,7 +25,7 @@ services:
     ports: ["8000:8000"]                 # the ONLY service exposed to the host
     environment:
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
-      - ADDELA_LLM=gemma4:12b-mlx
+      - DDELA_LLM=gemma4:12b-mlx
     volumes: ["./data/gateway:/data"]    # audit log persisted on-premise
     depends_on: [nemo-guardrails, prompt-guard, llama-guard, pii-service, fusion-service]
   dashboard:

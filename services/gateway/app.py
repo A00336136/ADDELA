@@ -11,7 +11,7 @@ LAYERS = {
 }
 FUSION = "http://fusion-service:8000/fuse"
 OLLAMA = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
-LLM = os.environ.get("ADDELA_LLM", "gemma4:12b-mlx")
+LLM = os.environ.get("DDELA_LLM", "gemma4:12b-mlx")
 AUDIT = "/data/audit_log.jsonl"
 
 app = FastAPI()

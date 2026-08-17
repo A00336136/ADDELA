@@ -17,5 +17,5 @@ def health():
 async def score(req: Req):
     resp = await rails.generate_async(
         messages=[{"role": "user", "content": req.text}])
-    blocked = resp["content"].strip() == "ADDELA_BLOCKED"     # input rail fired
+    blocked = resp["content"].strip() == "DDELA_BLOCKED"     # input rail fired
     return {"score": 1.0 if blocked else 0.0}
