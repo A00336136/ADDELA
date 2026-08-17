@@ -1,2 +1,2 @@
-# ADDELA
-Adaptive Defence-in-Depth for Enterprise LLM Applications
+# DDELA
+Defence-in-Depth for Enterprise LLM Applications
