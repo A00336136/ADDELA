@@ -8,7 +8,7 @@ system, prints where each number comes from, and states what each configuration 
 Nothing here is hard-coded: every figure is derived from the raw data.
 
   eval/scores.json               67 rows, four per-layer scores captured live via the gateway
-  data/dashboard/compare.json    per-prompt ADDELA vs LlamaFirewall decisions (same 67 prompts)
+  data/dashboard/compare.json    per-prompt DDELA vs LlamaFirewall decisions (same 67 prompts)
 """
 import json, pathlib
 import numpy as np
@@ -44,9 +44,9 @@ noisy_or = lambda x: 1.0 - (1.0 - LEAK) * np.prod(1.0 - np.clip(x, 0, 1), axis=1
 hard_or  = lambda x: np.clip(x, 0, 1).max(axis=1)
 
 print("=" * 96)
-print("FIGURE 2 — every bar recomputed from the captured evidence".center(96))
+print("FIGURE 2: every bar recomputed from the captured evidence".center(96))
 print("=" * 96)
-print(f"\nInput 1: eval/scores.json — {len(rows)} prompts x 4 layer scores, captured live through the gateway")
+print(f"\nInput 1: eval/scores.json, {len(rows)} prompts x 4 layer scores, captured live through the gateway")
 print(f"         labels: {int((y==0).sum())} safe, {int((y==1).sum())} unsafe")
 
 print("\n" + "-" * 96)
@@ -73,7 +73,7 @@ for tr, te in skf.split(X, y):
     t = best_t(lr.predict_proba(X[tr])[:, 1], y[tr])
     acc["Learned stacker"].append(metrics(y[te], (lr.predict_proba(X[te])[:, 1] >= t).astype(int)))
 what = {"Union (U)": "block if ANY layer fires (fail-closed)",
-        "Noisy-OR fusion (F)": "ADDELA's deployed rule: 1-(1-L)*PROD(1-si)",
+        "Noisy-OR fusion (F)": "DDELA's deployed rule: 1-(1-L)*PROD(1-si)",
         "Learned stacker": "logistic regression fitted on the 4 scores"}
 print(f"{'configuration':22s} {'what it is':44s} {'F1':>7s} {'bypass':>8s}")
 for k, v in acc.items():
@@ -103,10 +103,10 @@ m = metrics(np.array(truth), np.array(pred))
 print(f"source: {cmp_path.relative_to(ROOT)}  ({len(pred)} prompts scored)")
 print(f"confusion matrix: TP={m['tp']}  FP={m['fp']}  TN={m['tn']}  FN={m['fn']}")
 print(f"LlamaFirewall (on-premise config)   F1 {m['f1']:.3f}   bypass {m['bypass']:.3f}")
-print("\n   NOTE: LlamaFirewall is not part of ADDELA. It is Meta's real package running in its")
+print("\n   NOTE: LlamaFirewall is not part of DDELA. It is Meta's real package running in its")
 print("   own container under the 'baseline' Compose profile, driven over the identical corpus")
 print("   purely so the comparison has a credible reference point.")
-# ---- publish for the dashboard "Combiners (RQ1)" tab ----
+# ---- publish for the dashboard "Combiners" tab ----
 out = {"n": len(rows), "safe": int((y == 0).sum()), "unsafe": int((y == 1).sum()), "rows": []}
 for i in range(4):
     mm = metrics(y, (X[:, i] >= 0.5).astype(int))
@@ -127,7 +127,7 @@ out["rows"].append({"name": "LlamaFirewall", "what": "Meta's package, on-premise
 dest = ROOT / "data/dashboard/combiners.json"
 dest.parent.mkdir(parents=True, exist_ok=True)
 dest.write_text(json.dumps(out, indent=2))
-print(f"\nPublished to {dest.relative_to(ROOT)} -> visible in the console's 'Combiners (RQ1)' tab")
+print(f"\nPublished to {dest.relative_to(ROOT)} -> visible in the console's 'Combiners' tab")
 print("=" * 96)
 print("Every number above was derived from the two evidence files - none is hard-coded.")
 print("=" * 96)

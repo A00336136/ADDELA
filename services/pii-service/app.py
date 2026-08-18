@@ -5,7 +5,7 @@ from presidio_analyzer import AnalyzerEngine
 analyzer = AnalyzerEngine()
 app = FastAPI()
 
-# Only genuinely sensitive PII counts as a hard gate — NOT LOCATION / PERSON /
+# Only genuinely sensitive PII counts as a hard gate, NOT LOCATION / PERSON /
 # DATE / NRP / URL, which Presidio also detects but which are not sensitive on
 # their own (e.g. the country name in "capital of France").
 SENSITIVE = [

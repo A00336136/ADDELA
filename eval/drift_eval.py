@@ -1,5 +1,5 @@
 """
-RQ2 — Adaptation to threat drift (CUSUM change detection on the fused-risk stream).
+RQ2: Adaptation to threat drift (CUSUM change detection on the fused-risk stream).
 
 Simulates an attacker that adapts AFTER deployment: the attack rate in the request
 stream jumps at a known changepoint (request 100). Each request carries the REAL fused
@@ -109,7 +109,7 @@ if rep is not None:
     }
 json.dump(result, open(OUT, "w"), indent=2)
 
-print(f"{N_TRIALS} independent drift streams — attacker adapts at request {CHANGEPOINT} "
+print(f"{N_TRIALS} independent drift streams, attacker adapts at request {CHANGEPOINT} "
       f"({PRE_ATTACK_RATE:.0%} -> {POST_ATTACK_RATE:.0%} attack rate)")
 print(f"  mean fused risk  : {result['mean_risk_pre']:.3f}  ->  {result['mean_risk_post']:.3f}")
 print(f"  detection rate   : {result['detection_rate']:.1%} of streams alarmed")
@@ -119,5 +119,5 @@ print(f"  post-drift bypass: {result['mean_post_bypass']:.3f} "
       f"(unsafe prompts released after the change)")
 print(f"\nWrote {OUT}")
 print("Honest note: on the clean pilot the deployed detectors are near-binary, so the")
-print("post-drift bypass is ~0 — the anticipated coverage gap is a hypothesis for the")
+print("post-drift bypass is ~0, the anticipated coverage gap is a hypothesis for the")
 print("powered set (JailbreakBench / obfuscation), not visible at this fidelity.")

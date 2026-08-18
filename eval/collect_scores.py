@@ -1,6 +1,6 @@
 """
 Collect per-detector scores for the labelled prompt corpus by running each prompt
-through the live gateway. Writes eval/scores.json — the raw material for the
+through the live gateway. Writes eval/scores.json, the raw material for the
 offline, leakage-safe combiner analysis (combiner_eval.py). Run with the stack up.
 """
 import json, pathlib, time, urllib.request

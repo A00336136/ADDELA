@@ -40,7 +40,7 @@ services:
       - ./data/dashboard:/dashboard-data
     depends_on: [gateway]
 
-  # External baseline — Meta's LlamaFirewall. Only runs under the "baseline" profile:
+  # External baseline: Meta's LlamaFirewall. Only runs under the "baseline" profile:
   #   docker compose --profile baseline up --build -d llamafirewall
   llamafirewall:
     build: services/llamafirewall

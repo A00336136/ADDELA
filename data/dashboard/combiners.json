@@ -50,7 +50,7 @@
     },
     {
       "name": "Noisy-OR fusion (F)",
-      "what": "ADDELA's deployed rule: 1-(1-L)*PROD(1-si)",
+      "what": "DDELA's deployed rule: 1-(1-L)*PROD(1-si)",
       "kind": "deployed rule",
       "how": "leakage-safe 5-fold CV on the captured scores",
       "f1": 0.988,

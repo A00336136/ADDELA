@@ -3,7 +3,7 @@ Leakage-safe combiner ablation (addresses recommendations #5 and #1).
 
 Compares three ways of combining the four detector scores into one decision:
   - hard_OR    : block if the strongest single detector clears a threshold (the "union" baseline)
-  - noisy_OR   : ADDELA's leaky noisy-OR  risk = 1 - (1-LEAK)·Π(1-s_i)
+  - noisy_OR   : DDELA's leaky noisy-OR  risk = 1 - (1-LEAK)·Π(1-s_i)
   - learned_LR : a logistic-regression stacker over the 4 scores (dependency-aware combiner)
 
 Methodology (no leakage):
@@ -93,7 +93,7 @@ def cell(rows, key):
     v = np.array([r[key] for r in rows]); return f"{v.mean():.3f}±{v.std():.3f}"
 
 
-print(f"Leakage-safe {N_SPLITS}-fold CV — threshold selected on TRAIN fold only, evaluated on held-out TEST fold\n")
+print(f"Leakage-safe {N_SPLITS}-fold CV, threshold selected on TRAIN fold only, evaluated on held-out TEST fold\n")
 hdr = f"{'combiner':11s} {'F1':>12s} {'recall':>12s} {'precision':>12s} {'bypass':>12s} {'over-refusal':>13s} {'ECE':>7s}"
 print(hdr); print("-" * len(hdr))
 for name in res:

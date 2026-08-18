@@ -134,7 +134,7 @@ GAP_A, GAP_B = 606, 934      # S1|S2 corridor (baseline), S2|S3 corridor (models
 GAP_C = 966
 RED_C, GRN_A, GRN_B = 1628, 1646, 1662     # corridors between the network and Ollama
 
-# 1 / 8 — the caller reaches the gateway and everything returns through it
+# 1 / 8, the caller reaches the gateway and everything returns through it
 b.append(route([(250, DB_Y), (326, DB_Y)], BLUE, 2.6, both=True))
 b.append(route([(250, GW_Y), (326, GW_Y)], RED, 2.6, both=True))
 b.append(chip(268, GW_Y - 40, 1, RED)); b.append(chip(268, GW_Y + 40, 8, RED))
@@ -144,27 +144,27 @@ b.append(route([(S1+SW/2, 366), (S1+SW/2, 406)], BLUE, 2.4))
 b.append(text(S1+SW/2 + 60, 392, "drives", 11.5, "bold", BLUE))
 b.append(route([(B1, 300), (GAP_A, 300), (GAP_A, 660), (B2, 660)], GREY, 2.2, "7 5"))
 
-# 2 / 4 — the fan-out, and the four scores coming back
+# 2 / 4, the fan-out, and the four scores coming back
 b.append(route([(B1, GW_Y), (B2, GW_Y)], BLUE, 2.8, both=True))
 b.append(chip(626, GW_Y, 2, BLUE)); b.append(chip(626, GW_Y + 46, 4, BLUE))
 
-# 5 — the four numbers, unchanged, to the fusion service
+# 5, the four numbers, unchanged, to the fusion service
 b.append(route([(B3, GW_Y), (B4, GW_Y)], GREEN, 2.8, both=True))
 b.append(f'<circle cx="950" cy="{GW_Y}" r="21" fill="#ffffff"/>'); b.append(chip(950, GW_Y, 5, GREEN))
 
-# 6 — the verdict is enforced
+# 6, the verdict is enforced
 b.append(route([(B5, GW_Y), (B6, GW_Y)], PURPLE, 2.8))
 b.append(chip(1280, GW_Y, 6, PURPLE))
 
-# 3 — the two model-backed layers consult their models and read the reply back
+# 3, the two model-backed layers consult their models and read the reply back
 b.append(route([(B3, 311), (GAP_B, 311), (GAP_B, 806), (GRN_A, 806), (GRN_A, 306), (OX+18, 306)], GREEN, 2.2, "7 5", both=True))
 b.append(route([(B3, 475), (GAP_C, 475), (GAP_C, 826), (GRN_B, 826), (GRN_B, 426), (OX+18, 426)], GREEN, 2.2, "7 5", both=True))
 b.append(chip(1180, 806, 3, GREEN))
 
-# 6 — and only on an ALLOW does the gateway reach the protected model
+# 6, and only on an ALLOW does the gateway reach the protected model
 b.append(route([(1574, 478), (RED_C, 478), (RED_C, 586), (OX+18, 586)], RED, 2.4, "7 5"))
 
-# 7 — the gateway writes the audit line itself
+# 7, the gateway writes the audit line itself
 b.append(route([(520, 496), (520, 820), (291, 820), (291, EY)], AMBER, 2.4))
 b.append(chip(520, 700, 7, AMBER))
 

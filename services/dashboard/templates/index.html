@@ -22,7 +22,7 @@
   <button data-tab="audit">Audit &amp; Evidence</button>
   <button data-tab="bench">Benchmarking</button>
   <button data-tab="dataset">Dataset (67)</button>
-  <button data-tab="combiners">Combiners (RQ1)</button>
+  <button data-tab="combiners">Combiners</button>
   <button data-tab="compare">Comparison</button>
   <button data-tab="logs">Backend Logs</button>
 </nav>
@@ -332,7 +332,7 @@
   </section>
 
   <section class="pane" id="combiners">
-    <h2>Combiners (RQ1), what every bar in Evaluation 1 means, and where its number came from</h2>
+    <h2>Combiners, what every bar in Evaluation 1 means, and where its number came from</h2>
     <p class="lead">The four detectors are <b>deployed services</b>. The three composition rules are three ways of combining the <b>same four captured scores</b>, only the noisy-OR is deployed; the union and the learned stacker exist solely as offline comparisons, which is why they are not services and not in the architecture diagram. LlamaFirewall is an <b>external baseline</b> in its own container.</p>
     <div class="card">
       <b>How these numbers are produced</b>
@@ -418,7 +418,7 @@
       <p class="muted">2 · both systems saw the same corpus &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python verify_identical_corpus.py</code><br>
       <span class="muted">re reads both trails, matches on exact prompt text, and reports how many of the 67 appear in each.</span></p>
       <p class="muted">3 · every bar in Evaluation 1 &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python prove_figure2.py</code><br>
-      <span class="muted">recomputes all eight configurations from the captured scores and refreshes the <b>Combiners (RQ1)</b> tab.</span></p>
+      <span class="muted">recomputes all eight configurations from the captured scores and refreshes the <b>Combiners</b> tab.</span></p>
       <p class="muted">4 · step by step walkthrough &nbsp; <code>cd eval &amp;&amp; ./.venv/bin/python demo_live.py</code></p>
     </div>
   </section>
@@ -540,14 +540,14 @@ function metricsFor(get){
 function renderCompare(){
   const done = PROMPTS.filter(p=>CMP[p.i]);
   if(!done.length){ $('#cmpMetrics').innerHTML='<div class="metric"><div class="v">, </div><div class="k">run the comparison</div></div>'; $('#cmpStrata tbody').innerHTML=''; return; }
-  const A=metricsFor(p=>CMP[p.i]&&CMP[p.i].addela), L=metricsFor(p=>CMP[p.i]&&CMP[p.i].lfw);
+  const A=metricsFor(p=>CMP[p.i]&&CMP[p.i].ddela), L=metricsFor(p=>CMP[p.i]&&CMP[p.i].lfw);
   const card=(name,m,col)=>`<div class="metric" style="border-top:3px solid ${col}"><div class="v">${m.f1.toFixed(3)}</div>
     <div class="k">${name} · F1</div><div class="k">bypass ${m.bypass.toFixed(2)} · over ref ${m.over.toFixed(2)}</div></div>`;
   $('#cmpMetrics').innerHTML = card('DDELA fusion',A,'#1e874b') + card('LlamaFirewall',L,'#2f6fed');
   const strata=[...new Set(PROMPTS.map(p=>p.stratum))];
   $('#cmpStrata tbody').innerHTML = strata.map(s=>{
     const ps=PROMPTS.filter(p=>p.stratum===s && CMP[p.i]);
-    const a=ps.filter(p=>contained(CMP[p.i].addela)).length, l=ps.filter(p=>contained(CMP[p.i].lfw)).length;
+    const a=ps.filter(p=>contained(CMP[p.i].ddela)).length, l=ps.filter(p=>contained(CMP[p.i].lfw)).length;
     return `<tr><td><span class="strat">${s}</span></td><td>${ps.length}</td><td>${a}/${ps.length}</td><td>${l}/${ps.length}</td></tr>`;
   }).join('');
 }
@@ -555,12 +555,14 @@ async function runCompare(){
   $('#runCompare').disabled=true;
   for(const p of PROMPTS){
     $('#cmpStatus').textContent=`running ${p.i}/67…`;
-    let addela=null, lfw=null;
-    try{ const r=await (await fetch('/api/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:p.text,decide_only:true})})).json(); addela=r.decision||null; }catch(e){}
+    let ddela=null, lfw=null;
+    try{ const r=await (await fetch('/api/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:p.text,decide_only:true})})).json(); ddela=r.decision||null; }catch(e){}
     try{ const r=await (await fetch('/api/llamafirewall',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:p.text})})).json();
          lfw = r.error?null:(r.score>=0.5?'BLOCK':'ALLOW'); }catch(e){}
-    CMP[p.i]={addela,lfw};
-    fetch('/api/compare results',{method:'POST',headers:{'content type':'application/json'},body:JSON.stringify(CMP)});
+    CMP[p.i]={ddela,lfw};
+    try{ const sv=await fetch('/api/compare-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(CMP)});
+         if(!sv.ok) $('#cmpStatus').textContent='save failed: HTTP '+sv.status;
+    }catch(e){ $('#cmpStatus').textContent='save failed: '+e.message; }
     renderCompare();
   }
   $('#cmpStatus').textContent='done'; $('#runCompare').disabled=false;
@@ -591,7 +593,7 @@ $('#runCompare').onclick = runCompare;
 (async()=>{
   PROMPTS = await (await fetch('/api/prompts')).json();
   try{ RESULTS = await (await fetch('/api/results')).json() || {}; }catch(e){ RESULTS={}; }
-  try{ CMP = await (await fetch('/api/compare results')).json() || {}; }catch(e){ CMP={}; }
+  try{ CMP = await (await fetch('/api/compare-results')).json() || {}; }catch(e){ CMP={}; }
   renderTable(); renderDataset(); health(); setInterval(health, 15000);
 })();
 </script>

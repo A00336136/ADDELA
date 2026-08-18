@@ -1,13 +1,13 @@
 """
-LlamaFirewall external baseline — Meta's real package (github.com/meta-llama/PurpleLlama)
-exposed behind the same POST /score contract as ADDELA's own detectors, so it can be
+LlamaFirewall external baseline: Meta's real package (github.com/meta-llama/PurpleLlama)
+exposed behind the same POST /score contract as DDELA's own detectors, so it can be
 scored over the identical 67-prompt corpus for a fair head-to-head.
 
 On-premise config (no external API keys, by design):
   CODE_SHIELD · HIDDEN_ASCII · REGEX          (Meta's local scanners, as shipped)
   + PROMPT_GUARD                              (genuine Llama-Prompt-Guard-2, if USE_REAL_PROMPTGUARD=1)
 
-Excluded on purpose — both call Together AI and would break the on-premise thesis:
+Excluded on purpose, both call Together AI and would break the on-premise thesis:
   AGENT_ALIGNMENT · PII_DETECTION
 Decision rule is LlamaFirewall's own fail-closed policy: contained if the scan does not ALLOW.
 """
@@ -37,7 +37,7 @@ from llamafirewall import LlamaFirewall, Role, ScannerType, ScanDecision, UserMe
 
 SCANNERS = [ScannerType.CODE_SHIELD, ScannerType.HIDDEN_ASCII, ScannerType.REGEX]
 if os.environ.get("USE_REAL_PROMPTGUARD") == "1":
-    SCANNERS.append(ScannerType.PROMPT_GUARD)         # Scope B — genuine Meta injection detector
+    SCANNERS.append(ScannerType.PROMPT_GUARD)         # Scope B: genuine Meta injection detector
 
 lf = LlamaFirewall(scanners={Role.USER: SCANNERS})
 app = FastAPI()

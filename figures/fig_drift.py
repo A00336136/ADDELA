@@ -1,4 +1,4 @@
-"""RQ2 drift figure — the representative CUSUM run, rendered from eval/drift_result.json.
+"""RQ2 drift figure: the representative CUSUM run, rendered from eval/drift_result.json.
 
 One generator, one image, used by BOTH the interim and the final report so the two
 cannot drift apart. Everything drawn here comes from the JSON: the risk stream, the
@@ -25,7 +25,7 @@ plt.rcParams.update({"font.family": "Red Hat Text", "font.size": 11,
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11.0, 5.4), sharex=True,
                                gridspec_kw={"height_ratios": [1, 1.15], "hspace": 0.16})
-fig.suptitle("Evaluation 2 — CUSUM drift detection on the fused-risk stream (representative of 500 runs)",
+fig.suptitle("Evaluation 2: CUSUM drift detection on the fused-risk stream (representative of 500 runs)",
              fontsize=14, fontweight="bold", family="Red Hat Display", y=0.985)
 
 # ── upper: the fused-risk stream, attacks marked ──

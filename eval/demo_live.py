@@ -5,7 +5,7 @@ Run:   ./.venv/bin/python demo_live.py           (pauses between steps)
        ./.venv/bin/python demo_live.py --no-pause
 
 Each step shows: what the configuration is, the raw captured data it uses,
-the computation performed on that data, and the resulting metrics — so a
+the computation performed on that data, and the resulting metrics, so a
 reviewer can check the arithmetic by hand against the numbers on screen.
 """
 import json, pathlib, sys
@@ -27,7 +27,7 @@ idx = [r["i"] for r in rows]
 W = 92
 def hr(c="-"): print(c * W)
 def step(n, title):
-    print("\n"); hr("="); print(f"  STEP {n}  —  {title}"); hr("=")
+    print("\n"); hr("="); print(f"  STEP {n}:  {title}"); hr("=")
 def wait():
     if PAUSE:
         try: input("\n      [ press Enter for the next step ] ")
@@ -53,7 +53,7 @@ ATTACK = next(k for k,r in enumerate(rows) if r["label"]==1)
 def label_of(k): return f"#{idx[k]} [{prompts[idx[k]]['stratum']}] {' '.join(prompts[idx[k]]['text'].split())[:52]}"
 
 print("\n" + "=" * W)
-print("  ADDELA — LIVE WALKTHROUGH OF EVERY CONFIGURATION IN FIGURE 2".center(W))
+print("  DDELA: LIVE WALKTHROUGH OF EVERY CONFIGURATION IN FIGURE 2".center(W))
 print("=" * W)
 print(f"\n  Corpus: {len(rows)} prompts  ({int((y==0).sum())} safe, {int((y==1).sum())} unsafe)")
 print("  Two prompts are followed through every step so the arithmetic can be checked by hand:")
@@ -61,7 +61,7 @@ print(f"     SAFE   {label_of(BENIGN)}")
 print(f"     ATTACK {label_of(ATTACK)}")
 
 # ─────────────────────────────── STEP 0
-step(0, "THE RAW EVIDENCE — captured live through the gateway")
+step(0, "THE RAW EVIDENCE: captured live through the gateway")
 print("\n  Every number in Figure 2 derives from this one file. It was written by running")
 print("  each prompt through the deployed pipeline and recording what the four detectors said.\n")
 print(f"  file: eval/scores.json     ({len(rows)} rows)\n")
@@ -92,10 +92,10 @@ for i,(nm,how,covers) in enumerate(names):
     wait()
 
 # ─────────────────────────────── STEP 5
-step(5, "UNION (U) — the simplest composition rule")
+step(5, "UNION (U): the simplest composition rule")
 print("\n  What it is : contain the prompt if ANY single layer reaches its operating point.")
 print("  Rule       : risk = max(l1, l2, l3, l4)")
-print("  Executed?  : NO — recomputed from the same captured columns. It is not a service.")
+print("  Executed?  : NO, recomputed from the same captured columns. It is not a service.")
 print("  Why present: it is the simplest rule a competent engineer would build, and the")
 print("               deployed rule must beat it to justify its extra complexity.")
 print("\n  The arithmetic on our two prompts:")
@@ -113,14 +113,14 @@ show(mu,"<- 5-fold CV, threshold fitted on train folds only")
 wait()
 
 # ─────────────────────────────── STEP 6
-step(6, "NOISY-OR FUSION (F) — the rule ADDELA actually deploys")
+step(6, "NOISY-OR FUSION (F): the rule DDELA actually deploys")
 print("\n  What it is : risk = 1 - (1 - lambda) * PRODUCT(1 - s_i),   lambda = 0.02")
 print("  Meaning    : (1-s_i) is 'layer i thinks it is fine'; the product is 'all four think so';")
 print("               1 minus that is 'at least one is worried'. lambda is a floor so nothing")
 print("               is ever certified perfectly safe.")
 print("  Executed?  : this IS the deployed rule (fusion-service). Recomputed here so it is")
 print("               scored exactly like its competitors, on identical inputs.")
-print("\n  The arithmetic on our two prompts — check it by hand:")
+print("\n  The arithmetic on our two prompts, check it by hand:")
 for k,tag in ((BENIGN,"SAFE  "),(ATTACK,"ATTACK")):
     v=np.clip(X[k],0,1); prod=np.prod(1-v); risk=1-(1-LEAK)*prod
     print(f"      {tag}  (1-{v[0]:.2f})(1-{v[1]:.6f})(1-{v[2]:.2f})(1-{v[3]:.2f}) = {prod:.6f}")
@@ -139,9 +139,9 @@ print("  which is the check that this analysis reflects the deployed system.")
 wait()
 
 # ─────────────────────────────── STEP 7
-step(7, "LEARNED STACKER — the opposite bound: a combiner that learns from labels")
+step(7, "LEARNED STACKER: the opposite bound: a combiner that learns from labels")
 print("\n  What it is : logistic regression fitted on the four scores, predicting the label.")
-print("  Executed?  : NO — recomputed. It is not a service and never sees traffic.")
+print("  Executed?  : NO, recomputed. It is not a service and never sees traffic.")
 print("  Why present: it brackets the deployed rule from above. If a rule that is ALLOWED to")
 print("               learn from labels cannot beat the fixed formula, the formula is adequate.")
 lr=LogisticRegression(max_iter=1000).fit(X,y)
@@ -163,9 +163,9 @@ show(ms,"<- refitted inside every fold, never scored on its own training data")
 wait()
 
 # ─────────────────────────────── STEP 8
-step(8, "LLAMAFIREWALL — the external baseline, its own container")
+step(8, "LLAMAFIREWALL: the external baseline, its own container")
 print("\n  What it is : Meta's published package, imported and run as shipped.")
-print("  Executed?  : YES — a separate run of the same 67 prompts through its own container.")
+print("  Executed?  : YES, a separate run of the same 67 prompts through its own container.")
 print("  Config     : CODE_SHIELD, HIDDEN_ASCII, REGEX, PROMPT_GUARD (local only). The two")
 print("               cloud-calling scanners are excluded to keep the comparison on-premise.")
 bl_path = ROOT/"data/baseline/baseline_audit.jsonl"
@@ -191,12 +191,12 @@ for k,v in cmp.items():
 mb=metrics(np.array(truth),np.array(pred))
 show(mb,"<- scored on the identical corpus")
 print(f"\n  Reading: it releases {mb['fn']} attacks. Its on-premise configuration carries no")
-print("  harmful-content scanner, so that whole family is invisible to it — a coverage gap,")
+print("  harmful-content scanner, so that whole family is invisible to it, a coverage gap,")
 print("  not a weakness of its detectors.")
 wait()
 
 # ─────────────────────────────── SUMMARY
-step(9, "SUMMARY — the eight bars of Figure 2")
+step(9, "SUMMARY: the eight bars of Figure 2")
 print()
 print(f"      {'configuration':22s} {'executed?':12s} {'F1':>7s} {'bypass':>8s}")
 hr()
@@ -209,6 +209,6 @@ print(f"      {'LlamaFirewall':22s} {'run 2':12s} {mb['f1']:7.3f} {mb['bypass']:
 hr()
 print("\n  Two live runs produced everything: the corpus once through the gateway, and once")
 print("  through the baseline. The three composition rules are arithmetic on the scores the")
-print("  first run captured — recomputed rather than re-run, so their inputs are byte-identical")
+print("  first run captured, recomputed rather than re-run, so their inputs are byte-identical")
 print("  and any difference between them is caused by the rule alone.")
 print("\n" + "=" * W + "\n")

@@ -1,12 +1,12 @@
 """
-Proof that ADDELA and the LlamaFirewall baseline were driven over the IDENTICAL corpus.
+Proof that DDELA and the LlamaFirewall baseline were driven over the IDENTICAL corpus.
 
 Run:  ./.venv/bin/python verify_identical_corpus.py
 
 The two systems keep independent, append-only audit trails written by different
 services in different containers:
 
-    data/gateway/audit_log.jsonl     written by the ADDELA gateway
+    data/gateway/audit_log.jsonl     written by the DDELA gateway
     data/baseline/baseline_audit.jsonl   written by the LlamaFirewall container
 
 This script re-reads both, extracts the prompt text each system actually received,
@@ -51,7 +51,7 @@ print("=" * 84)
 print("IDENTICAL-CORPUS VERIFICATION".center(84))
 print("=" * 84)
 print(f"\nlabelled corpus              : {len(want)} unique prompts   ({CORPUS.relative_to(ROOT)})")
-print(f"ADDELA gateway audit trail   : {len(gw):5d} records, {len(gw_seen)} unique prompts")
+print(f"DDELA gateway audit trail   : {len(gw):5d} records, {len(gw_seen)} unique prompts")
 print(f"                               {GATEWAY.relative_to(ROOT)}")
 print(f"LlamaFirewall audit trail    : {len(bl):5d} records, {len(bl_seen)} unique prompts")
 print(f"                               {BASELINE.relative_to(ROOT)}")
@@ -68,12 +68,12 @@ missing   = set(want) - gw_seen - bl_seen
 
 print("\n" + "-" * 84)
 print(f"prompts seen by BOTH systems           : {len(both)} / {len(want)}")
-print(f"seen by ADDELA only                    : {len(gw_only)}")
+print(f"seen by DDELA only                    : {len(gw_only)}")
 print(f"seen by the baseline only              : {len(bl_only)}")
 print(f"seen by neither (never tested)         : {len(missing)}")
 print("-" * 84)
 
-for tag, s in (("ADDELA only", gw_only), ("baseline only", bl_only), ("untested", missing)):
+for tag, s in (("DDELA only", gw_only), ("baseline only", bl_only), ("untested", missing)):
     for k in sorted(s)[:5]:
         print(f"   [{tag}] #{want[k]['i']:2d} {want[k]['stratum']:12s} {norm(want[k]['text'])[:58]}")
 
@@ -86,7 +86,7 @@ else:
     print("        Re-run the Comparison tab to cover the remainder.")
 
 print("\n" + "-" * 84)
-print("SIDE-BY-SIDE — the same prompt as recorded by each system")
+print("SIDE-BY-SIDE: the same prompt as recorded by each system")
 print("-" * 84)
 gw_last = {h(r["prompt"]): r for r in gw if "prompt" in r}
 bl_last = {h(r["prompt"]): r for r in bl if "prompt" in r}
@@ -96,7 +96,7 @@ for k in sorted(both, key=lambda k: want[k]["i"]):
         continue
     g, b = gw_last[k], bl_last[k]
     print(f"\n#{want[k]['i']} [{want[k]['stratum']}]  {norm(want[k]['text'])[:70]}")
-    print(f"   ADDELA        scores={g.get('scores')} risk={g.get('risk')} -> {g.get('decision')}")
+    print(f"   DDELA        scores={g.get('scores')} risk={g.get('risk')} -> {g.get('decision')}")
     print(f"   LlamaFirewall decision={b.get('decision')} contained={b.get('contained')}")
     r = (b.get("reason") or "").replace("\n", " ")
     if r:

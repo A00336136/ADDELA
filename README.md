@@ -184,7 +184,7 @@ DDELA/
 │   ├── llama-guard/                   # L3 harmful classifier (Llama Guard 3 via Ollama) [VENDOR model + CUSTOM wrapper]
 │   │   ├── app.py
 │   │   └── Dockerfile
-│   ├── pii-service/                   # L4 PII gate (Microsoft Presidio)      [VENDOR lib + CUSTOM wrapper]
+│   ├── pii-service/                   # L4 personal data gate (Microsoft Presidio)      [VENDOR lib + CUSTOM wrapper]
 │   │   ├── app.py
 │   │   └── Dockerfile
 │   ├── fusion-service/                # leaky noisy-OR risk fusion            [CUSTOM]
@@ -234,7 +234,7 @@ source. None are modified or retrained.
 | L1 structural | **NVIDIA NeMo Guardrails** (`nemoguardrails` pip package), self-check-input rail; backed by **Llama 3.2 3B** on Ollama | PyPI + Ollama | Rebedea et al., EMNLP 2023 System Demonstrations |
 | L2 injection | **ProtectAI DeBERTa** `deberta-v3-base-prompt-injection-v2` (a non gated drop in for Meta Prompt-Guard-2) | Hugging Face (via `transformers`) | <https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2> |
 | L3 harmful | **Meta Llama Guard 3 8B** | Ollama (`llama-guard3:8b`) | Inan et al., arXiv:2312.06674 |
-| L4 PII | **Microsoft Presidio** (`presidio-analyzer` + spaCy `en_core_web_lg`) | PyPI + spaCy | <https://github.com/microsoft/presidio> |
+| L4 Personal data | **Microsoft Presidio** (`presidio-analyzer` + spaCy `en_core_web_lg`) | PyPI + spaCy | <https://github.com/microsoft/presidio> |
 | Protected model | **Google Gemma** (12B, MLX) | Ollama (`gemma4:12b-mlx`) | <https://ai.google.dev/gemma> |
 | Fusion theory | leaky **noisy-OR** evidence combination |, | Pearl 1988; Henrion 1989; Kittler et al. 1998 |
 | Baseline | **Meta LlamaFirewall** (`llamafirewall` pip package) | PyPI / Meta PurpleLlama | Chennabasappa et al., arXiv:2505.03574 |
@@ -1091,7 +1091,7 @@ scoring byte identical inputs removes model non determinism as a confound.
 
 | # | Configuration | Deployed? | How it is obtained |
 |---|---|---|---|
-| 1–4 | L1 Structural · L2 Injection · L3 Harmful · L4 PII | yes, as services | each read at its native 0.5 operating point |
+| 1 to 4 | L1 Structural · L2 Injection · L3 Harmful · L4 Personal data | yes, as services | each read at its native 0.5 operating point |
 | 5 | **Union (U)**, block if *any* layer fires | no | recomputed: `max(s₁…s₄)`, threshold fitted per CV fold |
 | 6 | **Noisy-OR fusion (F)**, DDELA's rule | **yes**, `fusion-service` | `1 − (1−λ)·Π(1−sᵢ)`, λ = 0.02 |
 | 7 | **Learned stacker** | no | logistic regression fitted on the four scores, leakage safe 5 fold CV |
@@ -1180,7 +1180,7 @@ sentencepiece and scikit learn/numpy/matplotlib. Each is obtained from its offic
 [§11](#11-consolidated-reference-urls)).
 
 **Custom code authored for this project, written with AI assistance and reviewed by the author:**
-the thin FastAPI wrapper `app.py` in every service (exposing the uniform `/score`–`/health`
+the thin FastAPI wrapper `app.py` in every service (exposing the uniform `/score` and `/health`
 contract), the NeMo configuration (`config.yml`, `prompt.yml`, `rails.co`), the `fusion-service`
 (the leaky noisy-OR engine), the `gateway` (coordination, audit logging, decision only mode), the
 `dashboard` (Flask app and the HTML/JS console), the LlamaFirewall wrapper and its audit trail,

@@ -66,7 +66,7 @@ def api_component():
 
 @app.post("/api/llamafirewall")
 def api_llamafirewall():
-    """External baseline arm — proxy the LlamaFirewall container (needs the 'baseline' profile up)."""
+    """External baseline arm: proxy the LlamaFirewall container (needs the 'baseline' profile up)."""
     text = request.get_json(force=True).get("text", "")
     try:
         r = requests.post(LFW_URL, json={"text": text}, timeout=200)
@@ -104,7 +104,7 @@ def api_audit():
     n = int(request.args.get("n", 100))
     p = pathlib.Path(AUDIT_LOG)
     if not p.exists():
-        return jsonify({"lines": [], "total": 0, "note": "no audit log yet — run a prompt first"})
+        return jsonify({"lines": [], "total": 0, "note": "no audit log yet, run a prompt first"})
     rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
     return jsonify({"lines": rows[-n:], "total": len(rows)})
 
