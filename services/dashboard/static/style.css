@@ -1,0 +1,62 @@
+:root{
+  --red:#EE0000;--ink:#182233;--mute:#5c6675;--line:#e3e8ef;--bg:#f6f8fb;--pane:#fff;--navy:#1f2a44;
+  --sans:-apple-system,'Segoe UI',Roboto,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+header{background:linear-gradient(135deg,#1f2a44,#3a1414);color:#fff;padding:20px 28px}
+header .badge{background:var(--red);font-size:11px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:6px}
+header h1{margin:8px 0 2px;font-size:21px}
+header p{margin:0;font-size:13px;opacity:.9}
+nav#tabs{background:var(--pane);border-bottom:1px solid var(--line);padding:0 20px;display:flex;gap:2px;overflow-x:auto}
+nav#tabs button{background:none;border:none;border-bottom:3px solid transparent;padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav#tabs button.active{color:var(--red);border-bottom-color:var(--red)}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 70px}
+.pane{display:none}
+.pane.active{display:block}
+h2{font-size:18px;margin:4px 0 10px}
+h3{font-size:15px;margin:16px 0 6px;color:var(--navy)}
+
+/* ── architecture flow ─────────────────────────────────────────── */
+.lead{color:var(--mute);margin:2px 0 14px}
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.node{background:var(--pane);border:2px solid var(--navy);border-radius:10px;padding:10px 18px;font-weight:700;text-align:center;min-width:230px}
+.node.gate{border-color:var(--red)}
+.node.ollama{border-color:#1e874b}
+.node small{display:block;font-weight:500;color:var(--mute);font-size:11px;margin-top:2px}
+.arrow{color:var(--mute);font-size:20px;margin:3px 0}
+.layers{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.layer{background:#eef1f6;border:1px solid var(--line);border-radius:9px;padding:9px 12px;min-width:150px;text-align:center;font-size:12.5px}
+.layer small{display:block;color:var(--mute);font-size:11px}
+.split{display:flex;gap:40px;justify-content:center}
+.branch{text-align:center}
+.pill{font-size:11px;font-weight:800;border-radius:5px;padding:2px 8px}
+.pill.allow{background:#eefaf1;color:#1e874b}
+.pill.block{background:#fff5f5;color:var(--red)}
+
+/* ── health strip ──────────────────────────────────────────────── */
+.health{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:700;border-radius:20px;padding:3px 11px;background:#334;color:#fff;display:inline-flex;align-items:center;gap:6px}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:#888}
+.chip.up .dot{background:#39d98a}
+.chip.down .dot{background:#ff5d5d}
+
+/* ── tables, cards, controls (manual / component / audit / bench) ── */
+.card{background:var(--pane);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0}
+button.act{background:var(--red);color:#fff;border:none;border-radius:7px;padding:8px 15px;font-weight:700;font-size:13px;cursor:pointer}
+button.act.sec{background:#eef1f6;color:var(--navy)}
+button.mini{font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px;background:var(--pane)}
+th{background:#eef1f6;text-align:left;padding:7px 9px;border:1px solid var(--line);font-weight:700}
+td{padding:6px 9px;border:1px solid var(--line);vertical-align:top}
+.badge{font-size:11px;font-weight:800;border-radius:5px;padding:2px 8px;display:inline-block}
+.ALLOW{background:#eefaf1;color:#1e874b}.BLOCK{background:#fff5f5;color:var(--red)}.FLAG{background:#fff7ea;color:#b7791f}
+.ok{color:#1e874b;font-weight:700}.bad{color:var(--red);font-weight:700}
+.strat{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--mute)}
+.muted{color:var(--mute);font-size:12.5px;margin-left:10px}
+textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:var(--sans);font-size:13px;resize:vertical}
+pre{background:#0e1116;color:#e6edf3;border-radius:8px;padding:11px 13px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:11.6px;line-height:1.5;margin:8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.metric{background:var(--pane);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.metric .v{font-size:26px;font-weight:800;color:var(--navy)}
+.metric .k{font-size:11.5px;color:var(--mute);margin-top:2px}
