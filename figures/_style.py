@@ -51,14 +51,21 @@ def arrow(pts, colour=LINE, sw=2.2, dash=None, both=False, marker="ar"):
             f'marker-end="url(#{marker}-{colour[1:]})"{st}/>')
 
 def defs(colours):
+    """Arrowheads: slim swept triangles at a fixed size, so a head never grows
+    fat when a line is drawn thicker. Length to width is 1.6 to 1, which reads
+    as a point rather than a wedge."""
+    L, HW = 14, 4.5        # length, half width
     out = ['<defs>']
     for c in colours:
-        out.append(f'<marker id="ar-{c[1:]}" markerWidth="10" markerHeight="10" refX="8" refY="3.2" '
-                   f'orient="auto"><path d="M0,0 L8,3.2 L0,6.4 Z" fill="{c}"/></marker>')
-        out.append(f'<marker id="ars-{c[1:]}" markerWidth="10" markerHeight="10" refX="0" refY="3.2" '
-                   f'orient="auto-start-reverse"><path d="M0,0 L8,3.2 L0,6.4 Z" fill="{c}"/></marker>')
+        out.append(f'<marker id="ar-{c[1:]}" markerUnits="userSpaceOnUse" '
+                   f'markerWidth="{L}" markerHeight="{HW*2}" refX="{L}" refY="{HW}" '
+                   f'orient="auto"><path d="M0,0 L{L},{HW} L0,{HW*2} Z" fill="{c}"/></marker>')
+        out.append(f'<marker id="ars-{c[1:]}" markerUnits="userSpaceOnUse" '
+                   f'markerWidth="{L}" markerHeight="{HW*2}" refX="0" refY="{HW}" '
+                   f'orient="auto"><path d="M{L},0 L0,{HW} L{L},{HW*2} Z" fill="{c}"/></marker>')
     out.append('</defs>')
     return "".join(out)
+
 
 def svg(w, h, body, colours):
     return (f'<svg viewBox="0 0 {w} {h}" width="{w}" height="{h}" xmlns="http://www.w3.org/2000/svg" '
@@ -70,23 +77,29 @@ def svg(w, h, body, colours):
 # Arrowheads are held clear of the box they point at, and every turn is a real
 # corner with room either side, so no head ever butts straight into an edge.
 STANDOFF = 14
-def route(pts, colour=LINE, sw=2.4, dash=None, both=False, standoff=STANDOFF):
-    """Draw an orthogonal path through pts, trimming each end back by `standoff`."""
+def route(pts, colour=LINE, sw=2.4, dash=None, both=False, standoff=STANDOFF,
+          head=True):
+    """Draw an orthogonal path through pts, trimming each end back by `standoff`.
+
+    head=False draws the line with no arrowhead, for a leg that feeds a junction
+    rather than a box. Two legs meeting at one point must never both carry a
+    head, or the heads stack on top of each other."""
     pts = [tuple(p) for p in pts]
     def trim(a, b, d):
         (x1, y1), (x2, y2) = a, b
         L = ((x2-x1)**2 + (y2-y1)**2) ** 0.5
         if L <= d: return a
         return (x1 + (x2-x1)*d/L, y1 + (y2-y1)*d/L)
-    pts[-1] = trim(pts[-1], pts[-2], standoff)
+    if head:
+        pts[-1] = trim(pts[-1], pts[-2], standoff)
     if both:
         pts[0] = trim(pts[0], pts[1], standoff)
     d = " ".join(("M" if i == 0 else "L") + f"{x:.1f},{y:.1f}" for i, (x, y) in enumerate(pts))
     da = f' stroke-dasharray="{dash}"' if dash else ""
     st = f' marker-start="url(#ars-{colour[1:]})"' if both else ""
+    me = f' marker-end="url(#ar-{colour[1:]})"' if head else ""
     return (f'<path d="{d}" fill="none" stroke="{colour}" stroke-width="{sw}" '
-            f'stroke-linejoin="round" stroke-linecap="round"{da} '
-            f'marker-end="url(#ar-{colour[1:]})"{st}/>')
+            f'stroke-linejoin="round" stroke-linecap="butt"{da}{me}{st}/>')
 
 def panel(x, y, w, h, title, colour, fill="#ffffff", dash=None, tsize=14):
     """A titled sub-panel: coloured header band over a light body."""

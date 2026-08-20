@@ -4,7 +4,7 @@ Read left to right: the caller, the four stages the request passes through insid
 the Docker Compose network, the native model runtime the two model-backed layers
 and the protected model live on, and the evidence written to the host filesystem.
 
-The numbered chips are the SAME eight steps used by Figure 4, the Final Results
+The numbered chips are the SAME eight steps used by the request lifecycle figure
 Report and the operator console, so the deployment view and the flow view cannot
 contradict one another.
 
@@ -171,7 +171,7 @@ b.append(chip(520, 700, 7, AMBER))
 # the baseline keeps its own, separate trail
 b.append(route([(700, 700), (700, EY)], GREY, 2.2, "7 5"))
 
-b.append(text(1000, 1272, "The numbered chips are the same eight steps as Figure 4, so the deployment view and the request flow cannot disagree.",
+b.append(text(1000, 1272, "The numbered chips are the same eight steps as the request lifecycle figure, so the deployment view and the request flow cannot disagree.",
               13, "normal", MUTED, style="i"))
 
 out = pathlib.Path(__file__).parent / "fig_topology.svg"
